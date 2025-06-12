@@ -2,6 +2,7 @@ package com.dashboard.api.application.controllers.user;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +11,32 @@ import com.dashboard.api.domain.user.User;
 import com.dashboard.api.service.user.UserService;
 
 @RestController
-@RequestMapping("/api")
 @EnableMethodSecurity
+@RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
-    @GetMapping("/users/auth_test_admin")
+    @GetMapping("/auth_test_admin")
     @PreAuthorize("hasRole('ADMIN')")
     public Map<String, String> authTestAdmin() {
         return Map.of("response", "hello world - admin");
     }
 
-    @GetMapping("/users/auth_test_user")
+    @GetMapping("/auth_test_user")
     @PreAuthorize("hasRole('USER')")
     public Map<String, String> authTestUser() {
         return Map.of("response", "hello world - user");
     }
 
-    @PostMapping("/users/login")
+    @PostMapping("/login")
     public IdToken login(@RequestParam String username, @RequestParam String password) {
         String token = userService.login(username, password);
         return new IdToken(token);
     }
 
-    @PostMapping("/users/register")
+    @PostMapping("/register")
     public User register(@RequestBody User user) {
         return userService.registerUser(user);
     }

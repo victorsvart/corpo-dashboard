@@ -31,9 +31,9 @@ public class SecurityConfiguration {
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/users/login").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                        .requestMatchers("/user/login").permitAll()
+                        .requestMatchers("/user/register").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/apidocs.html")
                         .permitAll()
                         .anyRequest().authenticated());
 

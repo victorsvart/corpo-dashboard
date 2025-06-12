@@ -1,5 +1,6 @@
 package com.dashboard.api.service.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,18 +16,17 @@ import jakarta.persistence.EntityExistsException;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TokenProvider tokenProvider;
+
     private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            TokenProvider tokenProvider,
+    public UserService(PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.tokenProvider = tokenProvider;
         this.authenticationManager = authenticationManager;
     }
 
