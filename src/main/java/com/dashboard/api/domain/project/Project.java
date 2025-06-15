@@ -18,7 +18,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "PROJECTS")
+@Table(name = "Projects")
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
