@@ -6,6 +6,8 @@ import DefaultInput from "~/components/defaultinput/DefaultInput";
 interface UserPresenter {
   id: number;
   username: string;
+  fullName: string;
+  profilePicture: string;
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -18,17 +20,25 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function Profile({ loaderData }: Route.ComponentProps) {
-  const { id, username } = loaderData;
+  const { id, username, fullName, profilePicture } = loaderData;
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Profile</h1>
       <div className="p-6 rounded-lg shadow">
         <div className="flex items-center space-x-4 mb-6">
-          <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-2xl">👤</span>
+          <div className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
+            {profilePicture ? (
+              <img
+                src={profilePicture}
+                alt="Profile"
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <span className="text-2xl">👤</span>
+            )}
           </div>
           <div>
-            <h2 className="text-xl font-semibold">{username}</h2>
+            <h2 className="text-xl font-semibold">@{username}</h2>
           </div>
         </div>
 
@@ -49,7 +59,7 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
               name="name"
               placeholder="Name"
               type="text"
-              defaultValue={"John Doe"}
+              defaultValue={fullName}
               readonly={true}
               label={"Full Name"}
             />
