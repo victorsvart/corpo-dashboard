@@ -40,7 +40,7 @@ public class AdminUserSeeder implements CommandLineRunner {
 
         User user = new User(adminUsername, adminPassword, "admin", "admin", profilePic, roles);
         try {
-            userService.registerUser(user);
+            userService.register(user);
         } catch (EntityExistsException e) {
             System.out.println("Admin user already seeded");
             return;

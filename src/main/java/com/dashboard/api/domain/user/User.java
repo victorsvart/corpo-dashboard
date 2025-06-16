@@ -58,6 +58,12 @@ public class User {
         this.setAuthorities(Authority.defaultAuthority());
     }
 
+    public void update(String username, String name, String lastName) {
+        this.username = username;
+        this.name = name;
+        this.lastName = lastName;
+    }
+
     public Long getId() {
         return id;
     }

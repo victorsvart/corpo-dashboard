@@ -36,7 +36,7 @@ public class UserSeeder implements CommandLineRunner {
         Set<Authority> role = Set.of(authorityRepository.findById("ROLE_USER").orElseThrow());
         User user = new User(userUsername, userPassword, "User", "Da Silva", profilePic, role);
         try {
-            userService.registerUser(user);
+            userService.register(user);
         } catch (EntityExistsException e) {
             System.out.println("Sample user already seeded");
             return;
