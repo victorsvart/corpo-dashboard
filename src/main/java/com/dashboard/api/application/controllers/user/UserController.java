@@ -3,16 +3,18 @@ package com.dashboard.api.application.controllers.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import com.dashboard.api.domain.user.User;
+import com.dashboard.api.infrastructure.jwt.JwtUtil;
 import com.dashboard.api.service.user.UserService;
 import com.dashboard.api.service.user.dto.LoginRequest;
+import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
+import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -28,22 +30,14 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
     public UserPresenter me() {
-        return userService.Me();
+        return userService.me();
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         try {
             String token = userService.login(request.username(), request.password());
-            ResponseCookie cookie = ResponseCookie.from("TOKEN", token)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(60 * 60)
-                    .sameSite("Lax")
-                    .build();
-
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(token));
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,6 +48,16 @@ public class UserController {
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+        return userService.register(user);
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserPresenter> update(@RequestBody UpdateUserInput input, HttpServletResponse response) {
+        UserWithTokenPresenter result = userService.update(input);
+        if (result.token() != null)
+            response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(result.token()));
+
+        return ResponseEntity.ok(result.user());
     }
 }

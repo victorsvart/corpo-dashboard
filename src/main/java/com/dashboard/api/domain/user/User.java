@@ -21,7 +21,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String username;
+    private String name;
+    private String lastName;
     private String password;
+    private String profilePicture;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UserAuthority", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "authority"))
@@ -30,21 +33,35 @@ public class User {
     protected User() {
     }
 
-    public User(Long id, String username, String password, Set<Authority> authorities) {
+    public User(Long id, String username, String password, String name, String lastName, String profilePicture,
+            Set<Authority> authorities) {
         this.id = id;
         this.username = username;
+        this.name = name;
+        this.lastName = lastName;
         this.password = password;
+        this.profilePicture = profilePicture;
         this.authorities = authorities;
     }
 
-    public User(String username, String password, Set<Authority> authorities) {
+    public User(String username, String password, String name, String lastName, String profilePicture,
+            Set<Authority> authorities) {
+        this.name = name;
+        this.lastName = lastName;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.profilePicture = profilePicture;
     }
 
     public void setDefaultAuthority() {
         this.setAuthorities(Authority.defaultAuthority());
+    }
+
+    public void update(String username, String name, String lastName) {
+        this.username = username;
+        this.name = name;
+        this.lastName = lastName;
     }
 
     public Long getId() {
@@ -53,6 +70,22 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {
@@ -77,5 +110,13 @@ public class User {
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }

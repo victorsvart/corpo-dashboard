@@ -17,9 +17,6 @@ import jakarta.persistence.EntityExistsException;
 @Component
 @Order(2)
 public class AdminUserSeeder implements CommandLineRunner {
-    // private final UserRepository userRepository;
-    // private final AuthorityRepository authorityRepository;
-    // private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final AuthorityRepository authorityRepository;
 
@@ -36,13 +33,14 @@ public class AdminUserSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        String profilePic = "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg";
         Set<Authority> roles = Set.of(
                 authorityRepository.findById("ROLE_USER").orElseThrow(),
                 authorityRepository.findById("ROLE_ADMIN").orElseThrow());
 
-        User user = new User(adminUsername, adminPassword, roles);
+        User user = new User(adminUsername, adminPassword, "admin", "admin", profilePic, roles);
         try {
-            userService.registerUser(user);
+            userService.register(user);
         } catch (EntityExistsException e) {
             System.out.println("Admin user already seeded");
             return;

@@ -20,10 +20,10 @@ public class UserSeeder implements CommandLineRunner {
     private final AuthorityRepository authorityRepository;
 
     @Value("${seeding.user.username}")
-    private String adminUsername;
+    private String userUsername;
 
     @Value("${seeding.user.password}")
-    private String adminPassword;
+    private String userPassword;
 
     public UserSeeder(UserService userService, AuthorityRepository authorityRepository) {
         this.userService = userService;
@@ -32,10 +32,11 @@ public class UserSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        String profilePic = "https://pm1.aminoapps.com/7258/5520799cf0539b408bd8abee0a14d3a492ee5107r1-753-753v2_hq.jpg";
         Set<Authority> role = Set.of(authorityRepository.findById("ROLE_USER").orElseThrow());
-        User user = new User(adminUsername, adminPassword, role);
+        User user = new User(userUsername, userPassword, "User", "Da Silva", profilePic, role);
         try {
-            userService.registerUser(user);
+            userService.register(user);
         } catch (EntityExistsException e) {
             System.out.println("Sample user already seeded");
             return;
