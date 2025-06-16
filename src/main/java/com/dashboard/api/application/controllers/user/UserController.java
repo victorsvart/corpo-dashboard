@@ -51,7 +51,7 @@ public class UserController {
         return userService.register(user);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserPresenter> update(@RequestBody UpdateUserInput input, HttpServletResponse response) {
         UserWithTokenPresenter result = userService.update(input);

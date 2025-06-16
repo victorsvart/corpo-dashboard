@@ -1,6 +1,7 @@
 export enum PopType {
   WARN = "warn",
   ERROR = "error",
+  SUCCESS = "success",
 }
 
 type PopUpPosition =
@@ -29,6 +30,7 @@ const positionClasses: Record<PopUpPosition, string> = {
 const typeClasses: Record<PopType, string> = {
   [PopType.WARN]: "bg-yellow-100 border-yellow-400 text-yellow-800",
   [PopType.ERROR]: "bg-red-100 border-red-400 text-red-800",
+  [PopType.SUCCESS]: "bg-green-100 border-green-400 text-green-800",
 };
 
 export default function PopUp({

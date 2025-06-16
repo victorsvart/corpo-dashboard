@@ -109,7 +109,7 @@ public class UserService {
 
         boolean usernameChanged = !user.getUsername().equals(input.username());
 
-        user.update(input.username(), input.name(), input.lastName());
+        user.update(input.username(), input.firstName(), input.lastName());
         user = userRepository.save(user);
 
         String token = usernameChanged ? remakeToken(user) : null;
