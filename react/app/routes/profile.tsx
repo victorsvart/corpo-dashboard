@@ -1,6 +1,7 @@
 import { api } from "~/api/api";
 import type { Route } from "./+types/profile";
 import { redirect } from "react-router";
+import DefaultInput from "~/components/defaultinput/DefaultInput";
 
 interface UserPresenter {
   id: number;
@@ -33,24 +34,24 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <input
+            <DefaultInput
+              name="username"
+              placeholder="Username"
               type="text"
-              defaultValue="John Doe"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              defaultValue={username}
+              readonly={true}
+              label={"Username"}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              defaultValue="john.doe@example.com"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            <DefaultInput
+              name="name"
+              placeholder="Name"
+              type="text"
+              defaultValue={"John Doe"}
+              readonly={true}
+              label={"Full Name"}
             />
           </div>
 
@@ -61,7 +62,7 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
             <textarea
               rows={4}
               defaultValue="Software engineer with 5 years of experience in web development."
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="bg-gray-900 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 

@@ -98,7 +98,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     {
       to: "/logout",
       label: "Logout",
-      className: "text-red-600 hover:text-red-700 md:hover:bg-red-50",
+      className: "text-red-600 hover:text-red-700 md:hover:bg-red-300",
       icon: (
         <svg
           className="w-5 h-5"
@@ -145,7 +145,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                         isActive(link.to)
                           ? "bg-blue-100 text-blue-700 font-medium"
-                          : "text-gray-300 hover:bg-indigo-700"
+                          : "text-indigo-300 hover:bg-indigo-700"
                       } ${link.className || ""}`}
                     >
                       {link.icon}
@@ -171,7 +171,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   to={link.to}
                   className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors duration-200 ${
                     isActive(link.to)
-                      ? "text-blue-700 bg-blue-50"
+                      ? "text-blue-700 bg-indigo-50"
                       : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                   }`}
                 >
