@@ -22,10 +22,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Profile({ loaderData }: Route.ComponentProps) {
   const { id, username, fullName, profilePicture } = loaderData;
   return (
-    <div className="space-y-6">
+    <div className=" space-y-6">
       <h1 className="text-2xl font-bold">Profile</h1>
-      <div className="p-6 rounded-lg shadow">
-        <div className="flex items-center space-x-4 mb-6">
+      <div className="bg-gray-900 p-6 rounded-lg shadow">
+        <div className=" flex items-center space-x-4 mb-6">
           <div className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
             {profilePicture ? (
               <img
@@ -72,7 +72,7 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
             <textarea
               rows={4}
               defaultValue="Software engineer with 5 years of experience in web development."
-              className="bg-gray-900 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full mt-1 rounded-xl border-2 border-dotted border-blue-400 bg-gray-900 p-3 text-sm text-white placeholder-gray-400 shadow-inner focus:border-blue-500 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
             />
           </div>
 
