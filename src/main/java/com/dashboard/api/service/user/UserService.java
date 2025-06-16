@@ -5,12 +5,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
+import com.dashboard.api.service.user.dto.UserPresenter;
 
 import jakarta.persistence.EntityExistsException;
 
@@ -28,6 +30,23 @@ public class UserService {
             AuthenticationManager authenticationManager) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+    }
+
+    public UserPresenter Me() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof String username) {
+                User user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                return UserPresenter.from(user);
+            }
+        }
+
+        throw new RuntimeException("User is not authenticated");
     }
 
     public User registerUser(User user) throws EntityExistsException {
