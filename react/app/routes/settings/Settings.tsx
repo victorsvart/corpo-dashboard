@@ -7,6 +7,11 @@ import {
   TabGroup,
   TabList,
   Tab,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
 } from "@headlessui/react";
 import clsx from "clsx";
 import { redirect, useLoaderData } from "react-router";
@@ -65,9 +70,10 @@ const variants = {
 export default function Settings() {
   const user = useLoaderData<typeof loader>();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-stone-950 text-white py-12 px-6">
+    <div className="min-h-screen text-white py-12 px-6">
       <TabGroup selectedIndex={selectedIndex} onChange={setSelectedIndex}>
         <div className="flex justify-center items-center w-full">
           <TabList className="flex gap-4 mb-6">
@@ -91,7 +97,7 @@ export default function Settings() {
               exit="exit"
               variants={variants}
               transition={{ duration: 0.25 }}
-              className="absolute top-0 left-0 w-full bg-stone-900 rounded-2xl shadow-lg p-8 space-y-8 border border-stone-800"
+              className="absolute top-0 left-0 w-full bg-white/4 backdrop-blur-sm rounded-2xl shadow-lg p-8 space-y-8 border border-stone-800"
             >
               <h2 className="text-3xl font-extrabold text-indigo-400 tracking-tight">
                 {categories[selectedIndex].name}
@@ -111,6 +117,7 @@ export default function Settings() {
                         @{user.username}
                       </h1>
                       <Button
+                        onClick={() => setIsDialogOpen(true)}
                         className="mt-1 inline-flex items-center gap-2 rounded-md bg-indigo-700 hover:bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white shadow transition duration-200"
                         type="button"
                       >
@@ -160,10 +167,10 @@ export default function Settings() {
                       />
                     </Field>
 
-                    <div className="pt-6">
+                    <div className="pt-6 flex justify-end">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center w-full rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
+                        className="inline-flex items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
                       >
                         Save Changes
                       </button>
@@ -189,10 +196,10 @@ export default function Settings() {
                       />
                     </Field>
 
-                    <div className="pt-6">
+                    <div className="flex justify-end pt-6">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center w-full rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
+                        className="inline-flex rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
                       >
                         Change Username
                       </button>
@@ -247,10 +254,10 @@ export default function Settings() {
                       />
                     </Field>
 
-                    <div className="pt-6">
+                    <div className="pt-6 flex justify-end">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center w-full rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
+                        className="inline-flex rounded-md bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition"
                       >
                         Change Password
                       </button>
@@ -262,6 +269,82 @@ export default function Settings() {
           </AnimatePresence>
         </div>
       </TabGroup>
+      <Transition show={isDialogOpen}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => setIsDialogOpen(false)}
+        >
+          <div className="fixed inset-0 z-10">
+            <TransitionChild
+              enter="ease-out duration-200"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+            </TransitionChild>
+
+            <div className="fixed inset-0 flex items-center justify-center p-6">
+              <TransitionChild
+                enter="ease-out duration-200"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-150"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <DialogPanel className="w-full max-w-2xl rounded-2xl bg-stone-900 p-8 border border-stone-700 shadow-xl">
+                  <DialogTitle className="text-2xl font-bold text-indigo-400 mb-4">
+                    Change Profile Picture
+                  </DialogTitle>
+
+                  <p className="text-sm text-stone-400 mb-6">
+                    Paste the URL of your new profile picture. This feature is
+                    not yet functional.
+                  </p>
+
+                  <div className="space-y-4">
+                    <Field>
+                      <Label className="block text-sm font-medium text-indigo-200 mb-1">
+                        Image URL
+                      </Label>
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/profile.jpg"
+                        className={clsx(
+                          "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-white placeholder-gray-500",
+                          "focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 transition"
+                        )}
+                      />
+                    </Field>
+
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button
+                        className="rounded-md bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-600 transition"
+                        onClick={() => setIsDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition"
+                        onClick={() => {
+                          // Handle image saving logic
+                          setIsDialogOpen(false);
+                        }}
+                      >
+                        Save Image
+                      </Button>
+                    </div>
+                  </div>
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 }

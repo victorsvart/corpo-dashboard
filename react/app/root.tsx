@@ -73,7 +73,7 @@ export default function App() {
       <button
         hidden={menuVisible}
         onClick={() => setMenuVisible(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-white text-black px-4 py-2 rounded-xl shadow-md hover:bg-gray-100 transition"
+        className="md:hidden fixed top-4 left-4 z-50 bg-indigo-600 text-black px-4 py-2 rounded-xl shadow-md hover:bg-indigo-300 transition"
       >
         ☰
       </button>
@@ -87,7 +87,7 @@ export default function App() {
 
       <aside
         className={clsx(
-          "fixed top-0 left-0 h-full z-40 bg-white/5 backdrop-blur-sm text-white shadow-xl transition-all duration-300 ease-in-out overflow-hidden",
+          "fixed top-0 left-0 h-full z-40 bg-white/4 backdrop-blur-md text-white shadow-xl transition-all duration-300 ease-in-out overflow-hidden",
           sidebarWidth,
           menuVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
@@ -105,7 +105,7 @@ export default function App() {
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
-            className="bg-white text-black w-7 h-7 ml-3 rounded-full shadow-md hover:bg-gray-300 transition"
+            className="bg-indigo-600 text-black w-7 h-7 ml-3 rounded-full shadow-md hover:bg-indigo-300 transition"
           >
             {menuVisible ? "←" : "→"}
           </button>

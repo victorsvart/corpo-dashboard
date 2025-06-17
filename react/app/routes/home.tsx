@@ -22,7 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   return (
-    <div>
+    <div className="min-h-screen">
       <h1 className="text-white">home</h1>
     </div>
   );
