@@ -31,7 +31,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const user = loaderData as UserPresenter;
   return (
     <>
-      <h1>hello, {user.name}</h1>
+      <h1 className="text-white">hello, {user.name}</h1>
     </>
   );
 }
