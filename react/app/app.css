@@ -7,9 +7,10 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
+    background-image: linear-gradient(to bottom right, #1c1917, rgb(22, 0, 56));
   }
 }
