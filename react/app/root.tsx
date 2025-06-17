@@ -12,6 +12,12 @@ import "./app.css";
 import { useState } from "react";
 import { Button } from "@headlessui/react";
 import clsx from "clsx";
+import {
+  BeakerIcon,
+  ChartBarIcon,
+  Cog6ToothIcon,
+  HomeIcon,
+} from "@heroicons/react/24/solid";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,9 +50,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const navLinks = [
+  { path: "/", icon: <HomeIcon className="size-5" />, text: "Home" },
+  {
+    path: "/dashboard",
+    icon: <ChartBarIcon className="size-5" />,
+    text: "Dashboard",
+  },
+  {
+    path: "/settings",
+    icon: <Cog6ToothIcon className="size-5" />,
+    text: "Settings",
+  },
+];
+
 export default function App() {
   const [menuVisible, setMenuVisible] = useState(false);
-
   const sidebarWidth = menuVisible ? "md:w-64" : "md:w-16";
 
   return (
@@ -99,15 +118,25 @@ export default function App() {
               : "opacity-0 -translate-x-4"
           )}
         >
-          <Button className="px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
+          {navLinks.map(({ path, icon, text }) => (
+            <Button
+              key={path}
+              className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium"
+            >
+              {icon}
+              {text}
+            </Button>
+          ))}
+          {/* <Button className="flex flex-row items-center gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
+            <BeakerIcon className="size-5"></BeakerIcon>
             Home
           </Button>
-          <Button className="px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
+          <Button className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
             Dashboard
           </Button>
-          <Button className="px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
+          <Button className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
             Settings
-          </Button>
+          </Button> */}
         </nav>
       </aside>
 
