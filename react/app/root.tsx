@@ -72,28 +72,28 @@ export default function App() {
           ✕
         </button>
 
-        {/* Expand/collapse toggle (desktop only) */}
-        <button
-          onClick={() => setMenuVisible(!menuVisible)}
-          className="hidden md:block absolute top-4 right-4 bg-white text-black w-7 h-7 rounded-full shadow-md hover:bg-gray-100 transition z-50"
-        >
-          {menuVisible ? "←" : "→"}
-        </button>
-
-        <div
-          className={clsx(
-            "mt-20 text-center transform transition-all duration-50 ease-in-out",
-            menuVisible
-              ? "opacity-100 translate-x-0"
-              : "opacity-0 -translate-x-4"
-          )}
-        >
-          <code className="text-3xl font-bold tracking-wide">CORPODASH</code>
+        <div className="flex items-center mt-8 absolute top-0 right-4 z-50">
+          <div
+            className={clsx(
+              "overflow-hidden transition-all duration-300 ease-in-out",
+              menuVisible ? "w-auto opacity-100 ml-0" : "w-0 opacity-0 ml-0"
+            )}
+          >
+            <code className="text-3xl tracking-wide block transition-opacity duration-300">
+              CORPODASH
+            </code>
+          </div>
+          <button
+            onClick={() => setMenuVisible(!menuVisible)}
+            className="bg-white text-black w-7 h-7 ml-3 rounded-full shadow-md hover:bg-gray-100 transition"
+          >
+            {menuVisible ? "←" : "→"}
+          </button>
         </div>
 
         <nav
           className={clsx(
-            "mt-10 px-4 flex flex-col gap-2 transform transition-all duration-100 ease-in-out",
+            "mt-24 px-4 flex flex-col gap-2 transform transition-all duration-100 ease-in-out",
             menuVisible
               ? "opacity-100 translate-x-0"
               : "opacity-0 -translate-x-4"
