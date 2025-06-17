@@ -13,7 +13,6 @@ import { useState } from "react";
 import { Button } from "@headlessui/react";
 import clsx from "clsx";
 import {
-  BeakerIcon,
   ChartBarIcon,
   Cog6ToothIcon,
   HomeIcon,
@@ -66,31 +65,32 @@ const navLinks = [
 
 export default function App() {
   const [menuVisible, setMenuVisible] = useState(false);
-  const sidebarWidth = menuVisible ? "md:w-64" : "md:w-16";
+  const sidebarWidth = menuVisible ? "w-full md:w-64" : "w-0 md:w-16";
 
   return (
     <>
       <button
+        hidden={menuVisible}
         onClick={() => setMenuVisible(true)}
         className="md:hidden fixed top-4 left-4 z-50 bg-white text-black px-4 py-2 rounded-xl shadow-md hover:bg-gray-100 transition"
       >
         ☰
       </button>
 
+      {menuVisible && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          onClick={() => setMenuVisible(false)}
+        />
+      )}
+
       <aside
         className={clsx(
-          "fixed top-0 left-0 h-full z-40 bg-white/5 backdrop-blur-sm text-white shadow-xl transition-all duration-300 ease-in-out",
+          "fixed top-0 left-0 h-full z-40 bg-white/5 backdrop-blur-sm text-white shadow-xl transition-all duration-300 ease-in-out overflow-hidden",
           sidebarWidth,
           menuVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
-        <button
-          onClick={() => setMenuVisible(false)}
-          className="md:hidden absolute top-4 left-4 bg-white text-black px-3 py-1 rounded shadow hover:bg-gray-200 transition"
-        >
-          ✕
-        </button>
-
         <div className="flex items-center mt-8 absolute top-0 right-4 z-50">
           <div
             className={clsx(
@@ -104,7 +104,7 @@ export default function App() {
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
-            className="bg-white text-black w-7 h-7 ml-3 rounded-full shadow-md hover:bg-gray-100 transition"
+            className="bg-white text-black w-7 h-7 ml-3 rounded-full shadow-md hover:bg-gray-300 transition"
           >
             {menuVisible ? "←" : "→"}
           </button>
@@ -127,24 +127,15 @@ export default function App() {
               {text}
             </Button>
           ))}
-          {/* <Button className="flex flex-row items-center gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
-            <BeakerIcon className="size-5"></BeakerIcon>
-            Home
-          </Button>
-          <Button className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
-            Dashboard
-          </Button>
-          <Button className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium">
-            Settings
-          </Button> */}
         </nav>
       </aside>
 
-      {/* Main content area */}
+      {/* Main content */}
       <main
         className={clsx(
           "relative z-10 pt-20 px-6 transition-all duration-300 ease-in-out max-w-6xl mx-auto",
-          menuVisible ? "md:pl-72" : "md:pl-20"
+          "md:pl-20",
+          menuVisible && "md:pl-72"
         )}
       >
         <Outlet />
