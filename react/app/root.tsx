@@ -2,6 +2,7 @@ import {
   isRouteErrorResponse,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -119,18 +120,24 @@ export default function App() {
           )}
         >
           {navLinks.map(({ path, icon, text }) => (
-            <Button
+            <NavLink
               key={path}
-              className="flex flex-row gap-2 px-4 py-2 text-left text-white rounded-lg hover:bg-white/20 transition font-medium"
+              to={path}
+              onClick={() => setMenuVisible(false)}
+              className={({ isActive }) =>
+                clsx(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg transition",
+                  isActive ? "bg-white/10 font-semibold" : "hover:bg-white/20"
+                )
+              }
             >
               {icon}
-              {text}
-            </Button>
+              {menuVisible && <span className="text-white">{text}</span>}
+            </NavLink>
           ))}
         </nav>
       </aside>
 
-      {/* Main content */}
       <main
         className={clsx(
           "relative z-10 pt-20 px-6 transition-all duration-300 ease-in-out max-w-6xl mx-auto",
