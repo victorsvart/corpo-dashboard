@@ -2,7 +2,6 @@ package com.dashboard.api.application.controllers.project;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,8 +21,11 @@ import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 @RequestMapping("/project")
 public class ProjectController {
 
-    @Autowired
     private ProjectService projectService;
+
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
+    }
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('USER')")

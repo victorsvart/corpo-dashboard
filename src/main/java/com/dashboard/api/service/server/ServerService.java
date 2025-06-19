@@ -1,9 +1,6 @@
 package com.dashboard.api.service.server;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dashboard.api.domain.server.Server;
@@ -17,8 +14,11 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ServerService implements BaseService<Server, ServerRegisterInput> {
 
-    @Autowired
     private ServerRepository serverRepository;
+
+    public ServerService(ServerRepository serverRepository) {
+        this.serverRepository = serverRepository;
+    }
 
     public List<Server> getAll() {
         return serverRepository.findAll();
