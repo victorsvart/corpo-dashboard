@@ -1,14 +1,31 @@
-import { Field, Label, Input, Button } from "@headlessui/react";
+import { Field, Label, Input } from "@headlessui/react";
 import clsx from "clsx";
 import type { Route } from "./+types/username";
 import { Form, redirect } from "react-router";
 
-export async function action({ request }: Route.ActionArgs) {
-  const form = await request.formData();
-  const username = form.get("username");
-  return redirect("/settings")
-  // Fetch to your API to update username...
+export async function clientAction({ request }: Route.ActionArgs) {
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  try {
+    const { username } = await request.formData().then((form) => {
+      return { username: form.get("username") }
+    });
+    const response = await fetch(`http://localhost:8080/user/updateUsername?username=${username}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader
+      },
+      credentials: "include",
+    });
 
+    if (!response.ok)
+      throw new Error(await response.json())
+
+    return redirect("/settings")
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 
 export default function ChangeUsername() {
@@ -19,6 +36,7 @@ export default function ChangeUsername() {
           New Username
         </Label>
         <Input
+          name="username"
           placeholder="Enter new username"
           className={clsx(
             "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-white placeholder-gray-500",

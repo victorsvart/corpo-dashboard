@@ -92,6 +92,9 @@ public class User {
   }
 
   public void setUsername(String username) {
+    if (username.isEmpty() || username.isBlank())
+      throw new IllegalArgumentException("username can't be empty");
+
     this.username = username;
   }
 

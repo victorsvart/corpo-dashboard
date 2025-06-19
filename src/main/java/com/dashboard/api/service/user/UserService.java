@@ -16,6 +16,7 @@ import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
+import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -107,7 +108,24 @@ public class UserService {
     user = userRepository.save(user);
 
     return UserPresenter.from(user);
-    // return new U(UserPresenter.from(user), token);
+  }
+
+  public UserWithTokenPresenter changeUsername(String username) throws EntityNotFoundException {
+    String loggedUsername = getAuthenticatedUsername();
+    if (userRepository.existsByUsernameAndUsernameNot(username, loggedUsername)) {
+      throw new EntityExistsException("Username is in use");
+    }
+
+    User user = userRepository.findByUsername(loggedUsername)
+        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
+
+    boolean usernameChanged = !user.getUsername().equals(username);
+    user.setUsername(username);
+    user = userRepository.save(user);
+
+    String token = usernameChanged ? remakeToken(user) : null;
+    return new UserWithTokenPresenter(UserPresenter.from(user), token);
+
   }
 
   public class UnauthorizedException extends RuntimeException {
