@@ -9,25 +9,25 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "Authorities")
 public class Authority {
-    @Id
-    private String authority;
+  @Id
+  private String authority;
 
-    protected Authority() {
-    }
+  protected Authority() {
+  }
 
-    public Authority(String authority) {
-        this.authority = authority;
-    }
+  public Authority(String authority) {
+    this.authority = authority;
+  }
 
-    public static Set<Authority> defaultAuthority() {
-        return Set.of(new Authority("ROLE_USER"));
-    }
+  public static Set<Authority> defaultAuthority() {
+    return Set.of(new Authority("ROLE_USER"));
+  }
 
-    public String getAuthority() {
-        return authority;
-    }
+  public String getAuthority() {
+    return authority;
+  }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
+  public void setAuthority(String authority) {
+    this.authority = authority;
+  }
 }

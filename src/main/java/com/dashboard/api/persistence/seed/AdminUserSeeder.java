@@ -17,36 +17,36 @@ import jakarta.persistence.EntityExistsException;
 @Component
 @Order(2)
 public class AdminUserSeeder implements CommandLineRunner {
-    private final UserService userService;
-    private final AuthorityRepository authorityRepository;
+  private final UserService userService;
+  private final AuthorityRepository authorityRepository;
 
-    @Value("${seeding.admin.username}")
-    private String adminUsername;
+  @Value("${seeding.admin.username}")
+  private String adminUsername;
 
-    @Value("${seeding.admin.password}")
-    private String adminPassword;
+  @Value("${seeding.admin.password}")
+  private String adminPassword;
 
-    public AdminUserSeeder(UserService userService, AuthorityRepository authorityRepository) {
-        this.userService = userService;
-        this.authorityRepository = authorityRepository;
+  public AdminUserSeeder(UserService userService, AuthorityRepository authorityRepository) {
+    this.userService = userService;
+    this.authorityRepository = authorityRepository;
+  }
+
+  @Override
+  public void run(String... args) {
+    String profilePic = "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg";
+    Set<Authority> roles = Set.of(
+        authorityRepository.findById("ROLE_USER").orElseThrow(),
+        authorityRepository.findById("ROLE_ADMIN").orElseThrow());
+
+    User user = new User(adminUsername, adminPassword, "admin", "admin", profilePic, roles);
+    try {
+      userService.register(user);
+    } catch (EntityExistsException e) {
+      System.out.println("Admin user already seeded");
+      return;
     }
 
-    @Override
-    public void run(String... args) {
-        String profilePic = "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg";
-        Set<Authority> roles = Set.of(
-                authorityRepository.findById("ROLE_USER").orElseThrow(),
-                authorityRepository.findById("ROLE_ADMIN").orElseThrow());
-
-        User user = new User(adminUsername, adminPassword, "admin", "admin", profilePic, roles);
-        try {
-            userService.register(user);
-        } catch (EntityExistsException e) {
-            System.out.println("Admin user already seeded");
-            return;
-        }
-
-        System.out.println("Seeded admin user");
-    }
+    System.out.println("Seeded admin user");
+  }
 
 }

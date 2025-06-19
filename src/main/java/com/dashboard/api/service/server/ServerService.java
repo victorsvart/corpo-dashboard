@@ -16,48 +16,48 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ServerService implements BaseService<Server, ServerPresenter, ServerRegisterInput> {
 
-    private ServerRepository serverRepository;
+  private ServerRepository serverRepository;
 
-    public ServerService(ServerRepository serverRepository) {
-        this.serverRepository = serverRepository;
-    }
+  public ServerService(ServerRepository serverRepository) {
+    this.serverRepository = serverRepository;
+  }
 
-    public List<Server> getAll() {
-        return serverRepository.findAll();
-    }
+  public List<Server> getAll() {
+    return serverRepository.findAll();
+  }
 
-    public ServerPresenter get(Long id) throws EntityNotFoundException {
-        Server server = serverRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Server not found"));
+  public ServerPresenter get(Long id) throws EntityNotFoundException {
+    Server server = serverRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Server not found"));
 
-        return ServerPresenter.from(server);
-    }
+    return ServerPresenter.from(server);
+  }
 
-    public List<Server> getMany(List<Long> ids) {
-        return serverRepository.findAllById(ids);
-    }
+  public List<Server> getMany(List<Long> ids) {
+    return serverRepository.findAllById(ids);
+  }
 
-    public Server register(ServerRegisterInput input) throws EntityExistsException {
-        Server server = new Server(input.name);
-        if (serverRepository.existsByName(input.name))
-            throw new EntityExistsException("Server is already registered");
+  public Server register(ServerRegisterInput input) throws EntityExistsException {
+    Server server = new Server(input.name);
+    if (serverRepository.existsByName(input.name))
+      throw new EntityExistsException("Server is already registered");
 
-        return serverRepository.save(server);
-    }
+    return serverRepository.save(server);
+  }
 
-    public Server update(ServerRegisterInput input) throws IllegalArgumentException {
-        if (input.id.isEmpty())
-            throw new IllegalArgumentException("id is required!");
+  public Server update(ServerRegisterInput input) throws IllegalArgumentException {
+    if (input.id.isEmpty())
+      throw new IllegalArgumentException("id is required!");
 
-        Server server = serverRepository.findById(input.id.get())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
+    Server server = serverRepository.findById(input.id.get())
+        .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
 
-        server = input.to(server);
-        return serverRepository.save(server);
-    }
+    server = input.to(server);
+    return serverRepository.save(server);
+  }
 
-    public String delete(Long id) throws IllegalArgumentException {
-        serverRepository.deleteById(id);
-        return "Deleted sucessfully";
-    }
+  public String delete(Long id) throws IllegalArgumentException {
+    serverRepository.deleteById(id);
+    return "Deleted sucessfully";
+  }
 }

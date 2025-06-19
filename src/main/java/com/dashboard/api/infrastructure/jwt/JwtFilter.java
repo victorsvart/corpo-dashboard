@@ -15,44 +15,44 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtFilter extends OncePerRequestFilter {
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+  private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final String BEARER_PREFIX = "Bearer ";
+  private static final String BEARER_PREFIX = "Bearer ";
 
-    private final TokenProvider tokenProvider;
+  private final TokenProvider tokenProvider;
 
-    public JwtFilter(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
+  public JwtFilter(TokenProvider tokenProvider) {
+    this.tokenProvider = tokenProvider;
+  }
+
+  private String extractToken(HttpServletRequest request) {
+    String token = request.getHeader(AUTHORIZATION_HEADER);
+    if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+      return token.substring(7);
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String token = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
-            return token.substring(7);
+    if (request.getCookies() != null) {
+      for (Cookie cookie : request.getCookies()) {
+        if ("TOKEN".equals(cookie.getName())) {
+          return cookie.getValue();
         }
-
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("TOKEN".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-
-        return null;
+      }
     }
 
-    @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String token = extractToken(request);
-        if (token != null && tokenProvider.validateToken(token)) {
-            Authentication authentication = tokenProvider.setAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+    return null;
+  }
 
-        filterChain.doFilter(request, response);
+  @Override
+  protected void doFilterInternal(
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
+    String token = extractToken(request);
+    if (token != null && tokenProvider.validateToken(token)) {
+      Authentication authentication = tokenProvider.setAuthentication(token);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    filterChain.doFilter(request, response);
+  }
 }
