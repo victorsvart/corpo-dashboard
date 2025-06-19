@@ -10,7 +10,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@headlessui/react";
 import clsx from "clsx";
 import {
@@ -65,7 +65,30 @@ const navLinks = [
 ];
 
 export default function App() {
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [width, setWidth] = useState<number | null>(null);
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const initialWidth = window.innerWidth;
+      setWidth(initialWidth);
+      setMenuVisible(initialWidth > 768);
+
+      function handleResize() {
+        setWidth(window.innerWidth);
+      }
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  const isMobile = width !== null && width <= 768;
+
+  useEffect(() => {
+    if (width !== null) setMenuVisible(!isMobile);
+  }, [width]);
+
   const sidebarWidth = menuVisible ? "w-full md:w-64" : "w-0 md:w-16";
 
   return (
@@ -123,7 +146,6 @@ export default function App() {
             <NavLink
               key={path}
               to={path}
-              onClick={() => setMenuVisible(false)}
               className={({ isActive }) =>
                 clsx(
                   "flex items-center gap-2 px-4 py-2 rounded-lg transition",
