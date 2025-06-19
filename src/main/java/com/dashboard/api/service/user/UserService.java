@@ -128,6 +128,16 @@ public class UserService {
 
   }
 
+  public void changePassword(String password) {
+    String loggedUsername = getAuthenticatedUsername();
+    User user = userRepository.findByUsername(loggedUsername)
+        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
+
+    String newPassword = passwordEncoder.encode(password);
+    user.setPassword(newPassword);
+    userRepository.save(user);
+  }
+
   public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {
       super(message);

@@ -69,4 +69,13 @@ public class UserController {
 
     return ResponseEntity.ok(result.user());
   }
+
+  @PutMapping("/changePassword")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<String> changePassword(@RequestBody String password,
+      HttpServletResponse response) {
+    userService.changePassword(password);
+    response.addHeader("Set-Cookie", JwtUtil.MakeEmptyCookieString());
+    return ResponseEntity.ok("Sucessfull");
+  }
 }

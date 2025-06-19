@@ -23,4 +23,25 @@ public class JwtUtil {
         .build()
         .toString();
   }
+
+  public static ResponseCookie MakeEmptyCookie() {
+    return ResponseCookie.from("TOKEN", "")
+        .httpOnly(true)
+        .secure(false)
+        .path("/")
+        .maxAge(0) // expires immediately
+        .sameSite("Lax")
+        .build();
+  }
+
+  public static String MakeEmptyCookieString() {
+    return ResponseCookie.from("TOKEN", "")
+        .httpOnly(true)
+        .secure(false)
+        .path("/")
+        .maxAge(0)
+        .sameSite("Lax")
+        .build()
+        .toString();
+  }
 }
