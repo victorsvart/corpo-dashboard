@@ -2,7 +2,6 @@ package com.dashboard.api.service.user;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +34,8 @@ public class UserService {
             TokenProvider tokenProvider,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager) {
-        this.userRepository = update
+        this.userRepository = userRepository;
+        this.tokenProvider = tokenProvider;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
