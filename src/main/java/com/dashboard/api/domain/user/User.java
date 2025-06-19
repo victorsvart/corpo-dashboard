@@ -58,8 +58,7 @@ public class User {
     this.setAuthorities(Authority.defaultAuthority());
   }
 
-  public void update(String username, String name, String lastName) {
-    this.username = username;
+  public void update(String name, String lastName) {
     this.name = name;
     this.lastName = lastName;
   }

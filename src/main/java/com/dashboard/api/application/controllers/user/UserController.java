@@ -55,11 +55,7 @@ public class UserController {
 
   @PutMapping("/update")
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<UserPresenter> update(@RequestBody UpdateUserInput input, HttpServletResponse response) {
-    UserWithTokenPresenter result = userService.update(input);
-    if (result.token() != null)
-      response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(result.token()));
-
-    return ResponseEntity.ok(result.user());
+  public UserPresenter update(@RequestBody UpdateUserInput input) {
+    return userService.update(input);
   }
 }

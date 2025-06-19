@@ -14,7 +14,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import clsx from "clsx";
-import { redirect, useLoaderData } from "react-router";
+import { Form, redirect, useLoaderData } from "react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -60,6 +60,34 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     throw redirect("/login");
   }
 };
+
+export async function action({ request }: Route.ActionArgs) {
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const { firstName, lastName } = await request.formData().then((form) => {
+    return {
+      firstName: form.get("firstName"),
+      lastName: form.get("lastName")
+    };
+  });
+
+  try {
+    await fetch("http://localhost:8080/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookieHeader,
+      },
+      body: JSON.stringify({ firstName, lastName }),
+      credentials: "include",
+    })
+
+    return redirect("/settings")
+  }
+  catch (error) {
+    console.error(error);
+  }
+
+}
 
 const variants = {
   enter: { opacity: 0, x: 20 },
@@ -126,12 +154,13 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <form className="space-y-6">
+                  <Form method="post" className="space-y-6">
                     <Field>
                       <Label className="block text-sm font-medium text-indigo-200 mb-1">
                         First Name
                       </Label>
                       <Input
+                        name="firstName"
                         defaultValue={user.name}
                         className={clsx(
                           "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-white placeholder-gray-500",
@@ -145,6 +174,7 @@ export default function Settings() {
                         Last Name
                       </Label>
                       <Input
+                        name="lastName"
                         defaultValue={user.lastName}
                         className={clsx(
                           "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-white placeholder-gray-500",
@@ -153,19 +183,19 @@ export default function Settings() {
                       />
                     </Field>
 
-                    <Field>
-                      <Label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Username
-                      </Label>
-                      <Input
-                        defaultValue={user.username}
-                        readOnly
-                        className={clsx(
-                          "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-gray-400 cursor-not-allowed",
-                          "opacity-60"
-                        )}
-                      />
-                    </Field>
+                    {/* <Field> */}
+                    {/*   <Label className="block text-sm font-medium text-indigo-200 mb-1"> */}
+                    {/*     Username */}
+                    {/*   </Label> */}
+                    {/*   <Input */}
+                    {/*     defaultValue={user.username} */}
+                    {/*     readOnly */}
+                    {/*     className={clsx( */}
+                    {/*       "block w-full rounded-md bg-stone-800 border border-stone-700 px-4 py-2 text-sm text-gray-400 cursor-not-allowed", */}
+                    {/*       "opacity-60" */}
+                    {/*     )} */}
+                    {/*   /> */}
+                    {/* </Field> */}
 
                     <div className="pt-6 flex justify-end">
                       <button
@@ -175,7 +205,7 @@ export default function Settings() {
                         Save Changes
                       </button>
                     </div>
-                  </form>
+                  </Form>
                 </>
               )}
 

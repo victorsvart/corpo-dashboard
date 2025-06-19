@@ -99,22 +99,16 @@ public class UserService {
     }
   }
 
-  public UserWithTokenPresenter update(UpdateUserInput input) {
+  public UserPresenter update(UpdateUserInput input) {
     String loggedUsername = getAuthenticatedUsername();
-    if (userRepository.existsByUsernameAndUsernameNot(input.username(), loggedUsername)) {
-      throw new EntityExistsException("Username is in use");
-    }
-
     User user = userRepository.findByUsername(loggedUsername)
         .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
 
-    boolean usernameChanged = !user.getUsername().equals(input.username());
-
-    user.update(input.username(), input.firstName(), input.lastName());
+    user.update(input.firstName(), input.lastName());
     user = userRepository.save(user);
 
-    String token = usernameChanged ? remakeToken(user) : null;
-    return new UserWithTokenPresenter(UserPresenter.from(user), token);
+    return UserPresenter.from(user);
+    // return new U(UserPresenter.from(user), token);
   }
 
   public class UnauthorizedException extends RuntimeException {
