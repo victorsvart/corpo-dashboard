@@ -16,7 +16,6 @@ import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
-import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
