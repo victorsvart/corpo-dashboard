@@ -1,18 +1,20 @@
 package com.dashboard.api.service.server;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.server.ServerRepository;
 import com.dashboard.api.service.base.BaseService;
+import com.dashboard.api.service.server.dto.ServerPresenter;
 import com.dashboard.api.service.server.dto.ServerRegisterInput;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class ServerService implements BaseService<Server, ServerRegisterInput> {
+public class ServerService implements BaseService<Server, ServerPresenter, ServerRegisterInput> {
 
     private ServerRepository serverRepository;
 
@@ -24,8 +26,11 @@ public class ServerService implements BaseService<Server, ServerRegisterInput> {
         return serverRepository.findAll();
     }
 
-    public Server get(Long id) throws EntityNotFoundException {
-        return serverRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Server not found"));
+    public ServerPresenter get(Long id) throws EntityNotFoundException {
+        Server server = serverRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Server not found"));
+
+        return ServerPresenter.from(server);
     }
 
     public List<Server> getMany(List<Long> ids) {
@@ -37,6 +42,17 @@ public class ServerService implements BaseService<Server, ServerRegisterInput> {
         if (serverRepository.existsByName(input.name))
             throw new EntityExistsException("Server is already registered");
 
+        return serverRepository.save(server);
+    }
+
+    public Server update(ServerRegisterInput input) throws IllegalArgumentException {
+        if (input.id.isEmpty())
+            throw new IllegalArgumentException("id is required!");
+
+        Server server = serverRepository.findById(input.id.get())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
+
+        server = input.to(server);
         return serverRepository.save(server);
     }
 

@@ -31,7 +31,7 @@ public class Project {
     @JoinTable(name = "ProjectServers", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "server_id"))
     private Set<Server> servers;
 
-    protected Project() {
+    public Project() {
     }
 
     public Project(Long id, String name) {
@@ -48,6 +48,10 @@ public class Project {
         this.name = name;
     }
 
+    public void update(String name) {
+        setName(name);
+    }
+
     public Long getId() {
         return id;
     }
@@ -61,6 +65,9 @@ public class Project {
     }
 
     public void setName(String name) {
+        if (name.isEmpty() || name.isBlank())
+            throw new IllegalArgumentException("name can't be empty!");
+
         this.name = name;
     }
 

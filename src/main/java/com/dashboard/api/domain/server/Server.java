@@ -24,6 +24,10 @@ public class Server {
         this.name = name;
     }
 
+    public void update(String name) {
+        setName(name);
+    }
+
     public Long getId() {
         return id;
     }
@@ -37,6 +41,9 @@ public class Server {
     }
 
     public void setName(String name) {
+        if (name.isEmpty() || name.isBlank())
+            throw new IllegalArgumentException("Server name can't be blank");
+
         this.name = name;
     }
 }

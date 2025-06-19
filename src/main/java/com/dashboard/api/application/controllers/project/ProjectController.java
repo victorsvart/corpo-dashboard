@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dashboard.api.domain.project.Project;
 import com.dashboard.api.service.project.ProjectService;
+import com.dashboard.api.service.project.dto.ProjectPresenter;
 import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 
 @RestController
@@ -35,7 +37,7 @@ public class ProjectController {
 
     @GetMapping("/get")
     @PreAuthorize("hasRole('USER')")
-    public Project get(@RequestParam Long id) {
+    public ProjectPresenter get(@RequestParam Long id) {
         return projectService.get(id);
     }
 
@@ -43,6 +45,12 @@ public class ProjectController {
     @PreAuthorize("hasRole('USER')")
     public Project register(@RequestBody ProjectRegisterInput input) {
         return projectService.register(input);
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('USER')")
+    public Project update(@RequestBody ProjectRegisterInput input) {
+        return projectService.update(input);
     }
 
     @DeleteMapping("/delete")

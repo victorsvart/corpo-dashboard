@@ -10,6 +10,7 @@ import com.dashboard.api.domain.project.Project;
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.project.ProjectRepository;
 import com.dashboard.api.service.base.BaseService;
+import com.dashboard.api.service.project.dto.ProjectPresenter;
 import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 import com.dashboard.api.service.server.ServerService;
 
@@ -17,7 +18,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class ProjectService implements BaseService<Project, ProjectRegisterInput> {
+public class ProjectService implements BaseService<Project, ProjectPresenter, ProjectRegisterInput> {
 
     private ProjectRepository projectRepository;
     private ServerService serverService;
@@ -39,8 +40,11 @@ public class ProjectService implements BaseService<Project, ProjectRegisterInput
         return projectRepository.findAll();
     }
 
-    public Project get(Long id) throws EntityNotFoundException {
-        return projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project not found"));
+    public ProjectPresenter get(Long id) throws EntityNotFoundException {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+
+        return ProjectPresenter.from(project);
     }
 
     public Project register(ProjectRegisterInput input) throws EntityExistsException, EntityNotFoundException {
@@ -53,8 +57,18 @@ public class ProjectService implements BaseService<Project, ProjectRegisterInput
 
         if (isAnyServerRegisteredInProject(input.name, input.serverIds))
             throw new EntityExistsException("Server is already registered in project");
-
         Project project = new Project(input.name, serversSelected);
+        return projectRepository.save(project);
+    }
+
+    public Project update(ProjectRegisterInput input) throws IllegalArgumentException {
+        if (input.id.isEmpty())
+            throw new IllegalArgumentException("id is required!");
+
+        Project project = projectRepository.findById(input.id.get())
+                .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified project"));
+
+        project = input.to(project);
         return projectRepository.save(project);
     }
 
