@@ -30,12 +30,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository,
+    public UserService(
+            UserRepository userRepository,
             TokenProvider tokenProvider,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.tokenProvider = tokenProvider;
+        this.userRepository = update
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
