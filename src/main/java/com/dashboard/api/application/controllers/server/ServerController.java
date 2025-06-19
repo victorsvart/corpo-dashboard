@@ -1,9 +1,7 @@
 package com.dashboard.api.application.controllers.server;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,8 +21,11 @@ import com.dashboard.api.service.server.dto.ServerRegisterInput;
 @RequestMapping("/server")
 public class ServerController {
 
-    @Autowired
     private ServerService serverService;
+
+    public ServerController(ServerService serverService) {
+        this.serverService = serverService;
+    }
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('USER')")

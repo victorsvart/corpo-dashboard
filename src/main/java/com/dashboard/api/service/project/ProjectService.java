@@ -20,11 +20,13 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ProjectService implements BaseService<Project, ProjectRegisterInput> {
 
-    @Autowired
     private ProjectRepository projectRepository;
-
-    @Autowired
     private ServerService serverService;
+
+    public ProjectService(ProjectRepository projectRepository, ServerService serverService) {
+        this.projectRepository = projectRepository;
+        this.serverService = serverService;
+    }
 
     private boolean isAnyServerRegisteredInProject(String projectName, List<Long> serverIds) {
         Optional<Long> projectId = projectRepository.findIdByName(projectName);

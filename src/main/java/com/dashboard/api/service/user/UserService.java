@@ -25,16 +25,17 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TokenProvider tokenProvider;
-
+    private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public UserService(PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository,
+            TokenProvider tokenProvider,
+            PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.tokenProvider = tokenProvider;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }

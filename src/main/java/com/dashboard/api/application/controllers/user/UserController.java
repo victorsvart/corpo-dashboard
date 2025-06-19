@@ -24,8 +24,11 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     private UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")

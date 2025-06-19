@@ -22,8 +22,11 @@ import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 @RequestMapping("/project")
 public class ProjectController {
 
-    @Autowired
     private ProjectService projectService;
+
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
+    }
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('USER')")

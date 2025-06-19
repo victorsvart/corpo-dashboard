@@ -17,8 +17,11 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ServerService implements BaseService<Server, ServerRegisterInput> {
 
-    @Autowired
     private ServerRepository serverRepository;
+
+    public ServerService(ServerRepository serverRepository) {
+        this.serverRepository = serverRepository;
+    }
 
     public List<Server> getAll() {
         return serverRepository.findAll();
