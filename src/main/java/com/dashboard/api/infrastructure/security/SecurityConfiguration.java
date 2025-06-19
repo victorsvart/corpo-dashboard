@@ -22,54 +22,54 @@ import com.dashboard.api.infrastructure.jwt.TokenProvider;
 
 @Configuration
 public class SecurityConfiguration {
-    private final TokenProvider tokenProvider;
+  private final TokenProvider tokenProvider;
 
-    public SecurityConfiguration(TokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
+  public SecurityConfiguration(TokenProvider tokenProvider) {
+    this.tokenProvider = tokenProvider;
+  }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
-        config.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
-        config.setAllowPrivateNetwork(true);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
+    config.setExposedHeaders(List.of("Set-Cookie", "Authorization"));
+    config.setAllowPrivateNetwork(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+  }
 
-    @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/user/login").permitAll()
-                        .requestMatchers("/user/register").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/apidocs.html")
-                        .permitAll()
-                        .anyRequest().authenticated());
+  @Bean
+  public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable())
+        .authorizeHttpRequests(request -> request
+            .requestMatchers("/user/login").permitAll()
+            .requestMatchers("/user/register").permitAll()
+            .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/apidocs.html")
+            .permitAll()
+            .anyRequest().authenticated());
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public PasswordEncoder defaultPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder defaultPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationManager defaultAuthenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager defaultAuthenticationManager(AuthenticationConfiguration config) throws Exception {
+    return config.getAuthenticationManager();
+  }
 }

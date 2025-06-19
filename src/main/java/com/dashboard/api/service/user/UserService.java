@@ -24,102 +24,102 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final TokenProvider tokenProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+  private final UserRepository userRepository;
+  private final TokenProvider tokenProvider;
+  private final PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
 
-    public UserService(
-            UserRepository userRepository,
-            TokenProvider tokenProvider,
-            PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.tokenProvider = tokenProvider;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
+  public UserService(
+      UserRepository userRepository,
+      TokenProvider tokenProvider,
+      PasswordEncoder passwordEncoder,
+      AuthenticationManager authenticationManager) {
+    this.userRepository = userRepository;
+    this.tokenProvider = tokenProvider;
+    this.passwordEncoder = passwordEncoder;
+    this.authenticationManager = authenticationManager;
+  }
+
+  private String getAuthenticatedUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null || !authentication.isAuthenticated())
+      throw new UnauthorizedException("User is not authenticated");
+
+    Object principal = authentication.getPrincipal();
+    if (principal instanceof String username)
+      return username;
+
+    throw new IllegalStateException("Unexpected authentication principal type: " + principal.getClass().getName());
+  }
+
+  private String remakeToken(User user) {
+    List<SimpleGrantedAuthority> authorities = user.getAuthorities().stream()
+        .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+        .toList();
+
+    Authentication authentication = new UsernamePasswordAuthenticationToken(
+        user.getUsername(), null, authorities);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    return tokenProvider.makeToken(authentication);
+  }
+
+  public UserPresenter me() {
+    String username = getAuthenticatedUsername();
+
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+    return UserPresenter.from(user);
+  }
+
+  public User register(User user) throws EntityExistsException {
+    if (userRepository.existsByUsername(user.getUsername())) {
+      throw new EntityExistsException("username is taken!");
     }
 
-    private String getAuthenticatedUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated())
-            throw new UnauthorizedException("User is not authenticated");
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof String username)
-            return username;
-
-        throw new IllegalStateException("Unexpected authentication principal type: " + principal.getClass().getName());
+    if (user.getAuthorities() == null || user.getAuthorities().isEmpty()) {
+      user.setDefaultAuthority();
     }
 
-    private String remakeToken(User user) {
-        List<SimpleGrantedAuthority> authorities = user.getAuthorities().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
-                .toList();
+    String hashedPassword = passwordEncoder.encode(user.getPassword());
+    user.setPassword(hashedPassword);
+    return userRepository.save(user);
+  }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getUsername(), null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return tokenProvider.makeToken(authentication);
+  public String login(String username, String password) {
+    try {
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
+          password);
+      Authentication authentication = authenticationManager.authenticate(authenticationToken);
+      return tokenProvider.makeToken(authentication);
+    } catch (AuthenticationException ex) {
+      ex.printStackTrace();
+      throw new RuntimeException("Invalid username or password");
+    }
+  }
+
+  public UserWithTokenPresenter update(UpdateUserInput input) {
+    String loggedUsername = getAuthenticatedUsername();
+    if (userRepository.existsByUsernameAndUsernameNot(input.username(), loggedUsername)) {
+      throw new EntityExistsException("Username is in use");
     }
 
-    public UserPresenter me() {
-        String username = getAuthenticatedUsername();
+    User user = userRepository.findByUsername(loggedUsername)
+        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
+    boolean usernameChanged = !user.getUsername().equals(input.username());
 
-        return UserPresenter.from(user);
+    user.update(input.username(), input.firstName(), input.lastName());
+    user = userRepository.save(user);
+
+    String token = usernameChanged ? remakeToken(user) : null;
+    return new UserWithTokenPresenter(UserPresenter.from(user), token);
+  }
+
+  public class UnauthorizedException extends RuntimeException {
+    public UnauthorizedException(String message) {
+      super(message);
     }
-
-    public User register(User user) throws EntityExistsException {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new EntityExistsException("username is taken!");
-        }
-
-        if (user.getAuthorities() == null || user.getAuthorities().isEmpty()) {
-            user.setDefaultAuthority();
-        }
-
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-        return userRepository.save(user);
-    }
-
-    public String login(String username, String password) {
-        try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
-                    password);
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            return tokenProvider.makeToken(authentication);
-        } catch (AuthenticationException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Invalid username or password");
-        }
-    }
-
-    public UserWithTokenPresenter update(UpdateUserInput input) {
-        String loggedUsername = getAuthenticatedUsername();
-        if (userRepository.existsByUsernameAndUsernameNot(input.username(), loggedUsername)) {
-            throw new EntityExistsException("Username is in use");
-        }
-
-        User user = userRepository.findByUsername(loggedUsername)
-                .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
-
-        boolean usernameChanged = !user.getUsername().equals(input.username());
-
-        user.update(input.username(), input.firstName(), input.lastName());
-        user = userRepository.save(user);
-
-        String token = usernameChanged ? remakeToken(user) : null;
-        return new UserWithTokenPresenter(UserPresenter.from(user), token);
-    }
-
-    public class UnauthorizedException extends RuntimeException {
-        public UnauthorizedException(String message) {
-            super(message);
-        }
-    }
+  }
 }

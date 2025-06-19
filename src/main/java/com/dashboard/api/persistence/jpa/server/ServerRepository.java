@@ -9,7 +9,7 @@ import com.dashboard.api.domain.server.Server;
 
 @Repository
 public interface ServerRepository extends JpaRepository<Server, Long> {
-    boolean existsByName(String name);
+  boolean existsByName(String name);
 
-    Optional<Server> getByName(String name);
+  Optional<Server> getByName(String name);
 }

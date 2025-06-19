@@ -20,60 +20,60 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ProjectService implements BaseService<Project, ProjectPresenter, ProjectRegisterInput> {
 
-    private ProjectRepository projectRepository;
-    private ServerService serverService;
+  private ProjectRepository projectRepository;
+  private ServerService serverService;
 
-    public ProjectService(ProjectRepository projectRepository, ServerService serverService) {
-        this.projectRepository = projectRepository;
-        this.serverService = serverService;
-    }
+  public ProjectService(ProjectRepository projectRepository, ServerService serverService) {
+    this.projectRepository = projectRepository;
+    this.serverService = serverService;
+  }
 
-    private boolean isAnyServerRegisteredInProject(String projectName, List<Long> serverIds) {
-        Optional<Long> projectId = projectRepository.findIdByName(projectName);
-        if (projectId.isPresent() && projectRepository.existsByNameAndServerIds(projectId.get(), serverIds))
-            return true;
+  private boolean isAnyServerRegisteredInProject(String projectName, List<Long> serverIds) {
+    Optional<Long> projectId = projectRepository.findIdByName(projectName);
+    if (projectId.isPresent() && projectRepository.existsByNameAndServerIds(projectId.get(), serverIds))
+      return true;
 
-        return false;
-    }
+    return false;
+  }
 
-    public List<Project> getAll() {
-        return projectRepository.findAll();
-    }
+  public List<Project> getAll() {
+    return projectRepository.findAll();
+  }
 
-    public ProjectPresenter get(Long id) throws EntityNotFoundException {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+  public ProjectPresenter get(Long id) throws EntityNotFoundException {
+    Project project = projectRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
-        return ProjectPresenter.from(project);
-    }
+    return ProjectPresenter.from(project);
+  }
 
-    public Project register(ProjectRegisterInput input) throws EntityExistsException, EntityNotFoundException {
-        if (projectRepository.exists(Example.of(new Project(input.name))))
-            throw new EntityExistsException("There already a project with the specified name!");
+  public Project register(ProjectRegisterInput input) throws EntityExistsException, EntityNotFoundException {
+    if (projectRepository.exists(Example.of(new Project(input.name))))
+      throw new EntityExistsException("There already a project with the specified name!");
 
-        List<Server> serversSelected = serverService.getMany(input.serverIds);
-        if (serversSelected.isEmpty())
-            throw new EntityNotFoundException("Server not found");
+    List<Server> serversSelected = serverService.getMany(input.serverIds);
+    if (serversSelected.isEmpty())
+      throw new EntityNotFoundException("Server not found");
 
-        if (isAnyServerRegisteredInProject(input.name, input.serverIds))
-            throw new EntityExistsException("Server is already registered in project");
-        Project project = new Project(input.name, serversSelected);
-        return projectRepository.save(project);
-    }
+    if (isAnyServerRegisteredInProject(input.name, input.serverIds))
+      throw new EntityExistsException("Server is already registered in project");
+    Project project = new Project(input.name, serversSelected);
+    return projectRepository.save(project);
+  }
 
-    public Project update(ProjectRegisterInput input) throws IllegalArgumentException {
-        if (input.id.isEmpty())
-            throw new IllegalArgumentException("id is required!");
+  public Project update(ProjectRegisterInput input) throws IllegalArgumentException {
+    if (input.id.isEmpty())
+      throw new IllegalArgumentException("id is required!");
 
-        Project project = projectRepository.findById(input.id.get())
-                .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified project"));
+    Project project = projectRepository.findById(input.id.get())
+        .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified project"));
 
-        project = input.to(project);
-        return projectRepository.save(project);
-    }
+    project = input.to(project);
+    return projectRepository.save(project);
+  }
 
-    public String delete(Long id) {
-        projectRepository.deleteById(id);
-        return "Deleted sucessfully";
-    }
+  public String delete(Long id) {
+    projectRepository.deleteById(id);
+    return "Deleted sucessfully";
+  }
 }

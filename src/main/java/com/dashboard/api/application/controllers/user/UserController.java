@@ -23,43 +23,43 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+  private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
+
+  @GetMapping("/me")
+  @PreAuthorize("hasRole('USER')")
+  public UserPresenter me() {
+    return userService.me();
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<Object> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    try {
+      String token = userService.login(request.username(), request.password());
+      response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(token));
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("message", "Invalid username or password"));
     }
+  }
 
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
-    public UserPresenter me() {
-        return userService.me();
-    }
+  @PostMapping("/register")
+  public User register(@RequestBody User user) {
+    return userService.register(user);
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        try {
-            String token = userService.login(request.username(), request.password());
-            response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(token));
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid username or password"));
-        }
-    }
+  @PutMapping("/update")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<UserPresenter> update(@RequestBody UpdateUserInput input, HttpServletResponse response) {
+    UserWithTokenPresenter result = userService.update(input);
+    if (result.token() != null)
+      response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(result.token()));
 
-    @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
-    }
-
-    @PutMapping("/update")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserPresenter> update(@RequestBody UpdateUserInput input, HttpServletResponse response) {
-        UserWithTokenPresenter result = userService.update(input);
-        if (result.token() != null)
-            response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(result.token()));
-
-        return ResponseEntity.ok(result.user());
-    }
+    return ResponseEntity.ok(result.user());
+  }
 }

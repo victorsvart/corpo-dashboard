@@ -14,23 +14,23 @@ import com.dashboard.api.persistence.jpa.authority.AuthorityRepository;
 @Order(1)
 public class AuthoritySeeder implements CommandLineRunner {
 
-    private final AuthorityRepository authorityRepository;
+  private final AuthorityRepository authorityRepository;
 
-    public AuthoritySeeder(AuthorityRepository authorityRepository) {
-        this.authorityRepository = authorityRepository;
+  public AuthoritySeeder(AuthorityRepository authorityRepository) {
+    this.authorityRepository = authorityRepository;
+  }
+
+  @Override
+  @Transactional
+  public void run(String... args) throws Exception {
+    Set<Authority> defaultAuthorities = Set.of(
+        new Authority("ROLE_USER"),
+        new Authority("ROLE_ADMIN"));
+
+    for (Authority authority : defaultAuthorities) {
+      if (!authorityRepository.existsById(authority.getAuthority())) {
+        authorityRepository.save(authority);
+      }
     }
-
-    @Override
-    @Transactional
-    public void run(String... args) throws Exception {
-        Set<Authority> defaultAuthorities = Set.of(
-                new Authority("ROLE_USER"),
-                new Authority("ROLE_ADMIN"));
-
-        for (Authority authority : defaultAuthorities) {
-            if (!authorityRepository.existsById(authority.getAuthority())) {
-                authorityRepository.save(authority);
-            }
-        }
-    }
+  }
 }
