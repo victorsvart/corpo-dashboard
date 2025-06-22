@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
+import com.dashboard.api.service.base.session.UserSession;
 import com.dashboard.api.service.mapper.Mapper;
 import com.dashboard.api.service.user.dto.RegisterRequest;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
@@ -30,29 +31,19 @@ public class UserService {
   private final TokenProvider tokenProvider;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
+  private final UserSession userSession;
 
   public UserService(
       UserRepository userRepository,
       TokenProvider tokenProvider,
       PasswordEncoder passwordEncoder,
-      AuthenticationManager authenticationManager) {
+      AuthenticationManager authenticationManager,
+      UserSession userSession) {
     this.userRepository = userRepository;
     this.tokenProvider = tokenProvider;
     this.passwordEncoder = passwordEncoder;
     this.authenticationManager = authenticationManager;
-  }
-
-  private String getAuthenticatedUsername() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null || !authentication.isAuthenticated())
-      throw new UnauthorizedException("User is not authenticated");
-
-    Object principal = authentication.getPrincipal();
-    if (principal instanceof String username)
-      return username;
-
-    throw new IllegalStateException("Unexpected authentication principal type: " + principal.getClass().getName());
+    this.userSession = userSession;
   }
 
   private String remakeToken(User user) {
@@ -67,10 +58,7 @@ public class UserService {
   }
 
   public UserPresenter me() {
-    String username = getAuthenticatedUsername();
-    User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new UnauthorizedException("User not found"));
-
+    User user = userSession.getLoggedUserInfo();
     return UserPresenter.from(user);
   }
 
@@ -102,10 +90,7 @@ public class UserService {
   }
 
   public UserPresenter update(UpdateUserInput input) {
-    String loggedUsername = getAuthenticatedUsername();
-    User user = userRepository.findByUsername(loggedUsername)
-        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
-
+    User user = userSession.getLoggedUserInfo();
     Mapper.fromTo(input, user);
     user = userRepository.save(user);
 
@@ -113,13 +98,7 @@ public class UserService {
   }
 
   public UserWithTokenPresenter changeUsername(String username) throws EntityNotFoundException {
-    String loggedUsername = getAuthenticatedUsername();
-    if (userRepository.existsByUsernameAndUsernameNot(username, loggedUsername)) {
-      throw new EntityExistsException("Username is in use");
-    }
-
-    User user = userRepository.findByUsername(loggedUsername)
-        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
+    User user = userSession.getLoggedUserInfo();
     boolean usernameChanged = !user.getUsername().equals(username);
     user.setUsername(username);
     user = userRepository.save(user);
@@ -130,18 +109,15 @@ public class UserService {
   }
 
   public void changePassword(String password) {
-    String loggedUsername = getAuthenticatedUsername();
-    User user = userRepository.findByUsername(loggedUsername)
-        .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
-
+    User user = userSession.getLoggedUserInfo();
     String newPassword = passwordEncoder.encode(password);
     user.setPassword(newPassword);
     userRepository.save(user);
   }
 
-  public class UnauthorizedException extends RuntimeException {
-    public UnauthorizedException(String message) {
-      super(message);
-    }
+  public void changeUserProfilePic(String picUrl) {
+    User user = userSession.getLoggedUserInfo();
+    user.setProfilePicture(picUrl);
+    userRepository.save(user);
   }
 }

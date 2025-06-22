@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dashboard.api.infrastructure.jwt.JwtUtil;
 import com.dashboard.api.service.user.UserService;
+import com.dashboard.api.service.user.dto.ChangeProfilePictureRequest;
 import com.dashboard.api.service.user.dto.LoginRequest;
 import com.dashboard.api.service.user.dto.RegisterRequest;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
@@ -74,11 +75,18 @@ public class UserController {
 
   @PutMapping("/changePassword")
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<String> changePassword(@RequestBody String password,
+  public String changePassword(@RequestBody String password,
       HttpServletResponse response) {
     userService.changePassword(password);
     response.addHeader("Set-Cookie", JwtUtil.MakeEmptyCookieString());
-    return ResponseEntity.ok("Successful");
+    return "Successful";
+  }
+
+  @PutMapping("/changeProfilePic")
+  @PreAuthorize("hasRole('USER')")
+  public String changeProfilePic(@RequestBody ChangeProfilePictureRequest request) {
+    userService.changeUserProfilePic(request.profilePicture());
+    return "Successful";
   }
 
   @GetMapping("/logout")

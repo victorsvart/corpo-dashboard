@@ -12,8 +12,7 @@ import {
 } from "@headlessui/react";
 import clsx from "clsx";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import type { Route } from "./+types";
+import type { Route } from "./+types/general";
 
 interface UserPresenter {
   id: number;
@@ -72,6 +71,26 @@ export async function action({ request }: Route.ActionArgs) {
 export default function GeneralSettings() {
   const user = useLoaderData<typeof loader>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [profilePicUrl, setProfilePicUrl] = useState("");
+
+  async function saveProfilePic() {
+    const response = await fetch("http://localhost:8080/user/changeProfilePic", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ profilePicture: profilePicUrl }),
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      setIsDialogOpen(false);
+      user.profilePicture = profilePicUrl;
+      setProfilePicUrl("");
+    } else {
+      console.error("Failed to update profile picture.");
+    }
+  }
 
   return (
     <>
@@ -154,6 +173,7 @@ export default function GeneralSettings() {
                     <Field>
                       <Label className="block text-sm font-medium text-indigo-200 mb-1">Image URL</Label>
                       <Input
+                        onChange={(e) => setProfilePicUrl(e.target.value)}
                         type="url"
                         placeholder="https://example.com/profile.jpg"
                         className={clsx(
@@ -172,7 +192,7 @@ export default function GeneralSettings() {
                       </Button>
                       <Button
                         className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition"
-                        onClick={() => setIsDialogOpen(false)}
+                        onClick={saveProfilePic}
                       >
                         Save Image
                       </Button>
