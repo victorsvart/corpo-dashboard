@@ -76,6 +76,14 @@ public class UserController {
       HttpServletResponse response) {
     userService.changePassword(password);
     response.addHeader("Set-Cookie", JwtUtil.MakeEmptyCookieString());
-    return ResponseEntity.ok("Sucessfull");
+    return ResponseEntity.ok("Successful");
+  }
+
+  @GetMapping("/logout")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<String> logout(
+      HttpServletResponse response) {
+    response.addHeader("Set-Cookie", JwtUtil.MakeEmptyCookieString());
+    return ResponseEntity.ok("logged out");
   }
 }

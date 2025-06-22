@@ -10,7 +10,7 @@ export interface PasswordChangeErrors {
   confirmNewPassword?: string;
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const form = await request.formData();
   const currentPassword = form.get("currentPassword");
   const newPassword = form.get("newPassword");
@@ -35,24 +35,17 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   try {
-    const cookieHeader = request.headers.get("cookie") ?? "";
-
     const response = await fetch("http://localhost:8080/user/changePassword", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookieHeader,
       },
       body: newPassword,
+      credentials: 'include'
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      return data(
-        { errors: { general: errorData.message || "Failed to change password." } },
-        { status: response.status }
-      );
-    }
+    if (!response.ok)
+      throw new Error(`${response.status} - ${response.statusText}`);
 
     return redirect("/settings");
   } catch (error) {

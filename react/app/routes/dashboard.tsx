@@ -38,7 +38,7 @@ const navLinks = [
   },
 ];
 
-export default function Dashboard({ loaderData }: Route.ComponentProps) {
+export default function Dashboard() {
   const [width, setWidth] = useState<number | null>(null);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
@@ -64,6 +64,17 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   }, [width]);
 
   const sidebarWidth = menuVisible ? "w-full md:w-64" : "w-0 md:w-16";
+
+  async function logout() {
+    await fetch("http://localhost:8080/user/logout", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: 'include'
+    })
+
+    redirect("/login")
+  }
 
   return (
     <>
@@ -131,6 +142,27 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
               {menuVisible && <span className="text-white">{text}</span>}
             </NavLink>
           ))}
+          <NavLink key="logout" to="login"></NavLink>
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg transition hover:bg-red-500 text-white mt-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h6.75a2.25 2.25 0 002.25-2.25V15M18 12H9m0 0l3-3m-3 3l3 3"
+              />
+            </svg>
+            {menuVisible && <span className="text-white">Logout</span>}
+          </button>
         </nav>
       </aside>
 
