@@ -11,6 +11,7 @@ import com.dashboard.api.domain.authority.Authority;
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.persistence.jpa.authority.AuthorityRepository;
 import com.dashboard.api.service.user.UserService;
+import com.dashboard.api.service.user.dto.RegisterRequest;
 
 import jakarta.persistence.EntityExistsException;
 
@@ -40,7 +41,9 @@ public class AdminUserSeeder implements CommandLineRunner {
 
     User user = new User(adminUsername, adminPassword, "admin", "admin", profilePic, roles);
     try {
-      userService.register(user);
+      RegisterRequest request = new RegisterRequest(user.getUsername(), user.getPassword(), user.getName(),
+          user.getLastName(), user.getAuthorities());
+      userService.register(request);
     } catch (EntityExistsException e) {
       System.out.println("Admin user already seeded");
       return;

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
+import com.dashboard.api.service.mapper.Mapper;
+import com.dashboard.api.service.user.dto.RegisterRequest;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
 import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
@@ -66,25 +68,25 @@ public class UserService {
 
   public UserPresenter me() {
     String username = getAuthenticatedUsername();
-
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UnauthorizedException("User not found"));
 
     return UserPresenter.from(user);
   }
 
-  public User register(User user) throws EntityExistsException {
-    if (userRepository.existsByUsername(user.getUsername())) {
+  public void register(RegisterRequest request) throws EntityExistsException {
+    if (userRepository.existsByUsername(request.username())) {
       throw new EntityExistsException("username is taken!");
     }
 
+    User user = Mapper.from(request);
     if (user.getAuthorities() == null || user.getAuthorities().isEmpty()) {
       user.setDefaultAuthority();
     }
 
     String hashedPassword = passwordEncoder.encode(user.getPassword());
     user.setPassword(hashedPassword);
-    return userRepository.save(user);
+    userRepository.save(user);
   }
 
   public String login(String username, String password) {
@@ -104,7 +106,7 @@ public class UserService {
     User user = userRepository.findByUsername(loggedUsername)
         .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
 
-    user.update(input.firstName(), input.lastName());
+    Mapper.fromTo(input, user);
     user = userRepository.save(user);
 
     return UserPresenter.from(user);
@@ -118,7 +120,6 @@ public class UserService {
 
     User user = userRepository.findByUsername(loggedUsername)
         .orElseThrow(() -> new EntityNotFoundException("Username not found for authenticated user"));
-
     boolean usernameChanged = !user.getUsername().equals(username);
     user.setUsername(username);
     user = userRepository.save(user);

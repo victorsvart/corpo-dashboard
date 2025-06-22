@@ -7,10 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
-import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.JwtUtil;
 import com.dashboard.api.service.user.UserService;
 import com.dashboard.api.service.user.dto.LoginRequest;
+import com.dashboard.api.service.user.dto.RegisterRequest;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
 import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
@@ -49,8 +49,10 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public User register(@RequestBody User user) {
-    return userService.register(user);
+  public ResponseEntity<Object> register(@RequestBody RegisterRequest user, HttpServletResponse response) {
+    userService.register(user);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(Map.of("message", "Registration Successful"));
   }
 
   @PutMapping("/update")

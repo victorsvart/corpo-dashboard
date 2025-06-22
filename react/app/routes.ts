@@ -1,9 +1,11 @@
 import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
-import { replace } from "react-router";
 
 export default [
-  // route("/", <Navigate replace to = "/dashboard/home" />),
-  route("/login", "routes/login/Login.tsx"),
+  ...prefix("/auth", [
+    route("/login", "routes/auth/login/Login.tsx"),
+    route("/register", "routes/auth/register/Register.tsx"),
+    route("/onlyAuth", "routes/auth/OnlyAuth.tsx"),
+  ]),
 
   layout("routes/dashboard.tsx", [
     index("routes/home/home.tsx"),

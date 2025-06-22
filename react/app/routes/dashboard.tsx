@@ -1,8 +1,8 @@
 import { NavLink, Outlet, redirect } from "react-router";
-import type { Route } from "./+types/home";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { ChartBarIcon, Cog6ToothIcon, HomeIcon } from "@heroicons/react/24/solid";
+import type { Route } from "./+types/dashboard";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cookieHeader = request.headers.get("cookie") ?? "";
@@ -19,7 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     if (!response.ok)
       throw new Error(`${response.status} - ${response.statusText}`);
   } catch (error) {
-    throw redirect("/login");
+    throw redirect("/auth/login?error=session_expired");
   }
 }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.server.ServerRepository;
 import com.dashboard.api.service.base.BaseService;
+import com.dashboard.api.service.mapper.Mapper;
 import com.dashboard.api.service.server.dto.ServerPresenter;
 import com.dashboard.api.service.server.dto.ServerRegisterInput;
 
@@ -38,7 +39,7 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   }
 
   public Server register(ServerRegisterInput input) throws EntityExistsException {
-    Server server = new Server(input.name);
+    Server server = Mapper.from(input);
     if (serverRepository.existsByName(input.name))
       throw new EntityExistsException("Server is already registered");
 
@@ -52,7 +53,7 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
     Server server = serverRepository.findById(input.id.get())
         .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
 
-    server = input.to(server);
+    Mapper.fromTo(input, server);
     return serverRepository.save(server);
   }
 

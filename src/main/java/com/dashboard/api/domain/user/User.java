@@ -3,6 +3,8 @@ package com.dashboard.api.domain.user;
 import java.util.Set;
 
 import com.dashboard.api.domain.authority.Authority;
+import com.dashboard.api.service.user.dto.RegisterRequest;
+import com.dashboard.api.service.user.dto.UpdateUserInput;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

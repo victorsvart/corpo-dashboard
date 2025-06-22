@@ -10,6 +10,7 @@ import com.dashboard.api.domain.project.Project;
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.project.ProjectRepository;
 import com.dashboard.api.service.base.BaseService;
+import com.dashboard.api.service.mapper.Mapper;
 import com.dashboard.api.service.project.dto.ProjectPresenter;
 import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 import com.dashboard.api.service.server.ServerService;
@@ -57,7 +58,7 @@ public class ProjectService implements BaseService<Project, ProjectPresenter, Pr
 
     if (isAnyServerRegisteredInProject(input.name, input.serverIds))
       throw new EntityExistsException("Server is already registered in project");
-    Project project = new Project(input.name, serversSelected);
+    Project project = Mapper.from(input, serversSelected);
     return projectRepository.save(project);
   }
 
@@ -68,7 +69,7 @@ public class ProjectService implements BaseService<Project, ProjectPresenter, Pr
     Project project = projectRepository.findById(input.id.get())
         .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified project"));
 
-    project = input.to(project);
+    Mapper.fromTo(input, project);
     return projectRepository.save(project);
   }
 
