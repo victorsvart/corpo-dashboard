@@ -7,4 +7,9 @@ public class ProjectRegisterInput {
   public Optional<Long> id;
   public String name;
   public List<Long> serverIds;
+
+  public ProjectRegisterInput(String name, List<Long> serverIds) {
+    this.name = name;
+    this.serverIds = serverIds;
+  }
 }
