@@ -1,8 +1,18 @@
+import FloatingInput from "~/routes/components/FloatingInput";
 import type { Route } from "./+types/Login";
-import FloatingInput from "../components/FloatingInput";
-import { Form, redirect } from "react-router";
+import {
+  Form,
+  NavLink,
+  redirect,
+  useLoaderData,
+} from "react-router";
+import { useState } from "react";
+import Alert from "~/routes/components/Alert";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const errorParam = url.searchParams.get("error");
+
   const cookieHeader = request.headers.get("cookie") ?? "";
   try {
     const response = await fetch("http://localhost:8080/user/me", {
@@ -13,30 +23,36 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
       credentials: "include",
     });
-
-    if (!response.ok)
-      throw new Error(`${response.status} - ${response.statusText}`);
-
-    return redirect("/");
+    if (response.ok) {
+      return redirect("/");
+    }
   } catch (error) {
     console.error(error);
   }
+
+  let errorMessage = null;
+  switch (errorParam) {
+    case "auth_failed":
+      errorMessage = "Authentication failed";
+      break;
+    case "session_expired":
+      errorMessage = "Session expired";
+      break;
+  }
+
+  return { errorMessage };
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const { username, password } = await request.formData().then((form) => {
-    return {
-      username: String(form.get("username")),
-      password: String(form.get("password")),
-    };
-  });
+  const { username, password } = await request.formData().then((form) => ({
+    username: String(form.get("username")),
+    password: String(form.get("password")),
+  }));
 
   try {
     await fetch("http://localhost:8080/user/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
       credentials: "include",
     });
@@ -46,6 +62,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 }
 
 export default function Login() {
+  const { errorMessage } = useLoaderData() as { errorMessage: string | null };
+  const [alertOpen, setAlertOpen] = useState(Boolean(errorMessage));
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-indigo-950 to-black px-4">
       <div className="w-full max-w-md rounded-3xl border border-white/20 bg-stone-900/40 shadow-2xl backdrop-blur-md">
@@ -75,10 +94,18 @@ export default function Login() {
         </Form>
         <div className="text-center pb-6 text-sm text-white/50">
           <span>Don't have an account?</span>{" "}
-          <a href="#" className="text-indigo-400 hover:underline">
-            Sign up
-          </a>
+          <NavLink key="signUp" to="/auth/register">
+            <span className="text-indigo-400 hover:underline">Sign up</span>
+          </NavLink>
         </div>
+      </div>
+      <div className="fixed bottom-25 z-50">
+        <Alert
+          isOpen={alertOpen}
+          onClose={() => setAlertOpen(false)}
+          message={errorMessage ?? ""}
+          type="error"
+        />
       </div>
     </div>
   );

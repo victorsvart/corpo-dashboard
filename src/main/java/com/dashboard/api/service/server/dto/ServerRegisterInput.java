@@ -2,15 +2,23 @@ package com.dashboard.api.service.server.dto;
 
 import java.util.Optional;
 
-import com.dashboard.api.domain.server.Server;
-import com.dashboard.api.service.base.dto.RegistrationInputBase;
-
-public class ServerRegisterInput implements RegistrationInputBase<Server> {
+public class ServerRegisterInput {
   public Optional<Long> id;
   public String name;
 
-  public Server to(Server server) {
-    server.update(name);
-    return server;
+  public ServerRegisterInput() {
+  }
+
+  public ServerRegisterInput(String name) {
+    this.name = name;
+
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }
