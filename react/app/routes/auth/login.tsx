@@ -32,10 +32,6 @@ import {
 
 import type { Route } from "./+types/login";
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Loader to redirect if already logged in
-// ─────────────────────────────────────────────────────────────────────────────
 export async function clientLoader() {
   const response = await fetch("http://localhost:8080/user/me", {
     method: "GET",
@@ -48,10 +44,6 @@ export async function clientLoader() {
   }
 }
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Action handler for login form submission
-// ─────────────────────────────────────────────────────────────────────────────
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const form = await request.formData();
   const username = form.get("username");
@@ -79,10 +71,6 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   return redirect("/home");
 }
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Login Component
-// ─────────────────────────────────────────────────────────────────────────────
 export default function Login() {
   const actionData = useActionData<{ error?: string }>();
   const [error, setError] = useState<string | null>(null);
