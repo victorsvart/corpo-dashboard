@@ -6,22 +6,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.dashboard.api.application.controllers.base.ApiResponse;
+import com.dashboard.api.domain.exception.UnauthorizedException;
 
 import jakarta.persistence.EntityExistsException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<ApiResponse<Object>> handleEntityExists(EntityExistsException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null));
-    }
+  @ExceptionHandler(EntityExistsException.class)
+  public ResponseEntity<ApiResponse<Object>> handleEntityExists(EntityExistsException ex) {
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null));
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleAllOtherExceptions(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null));
-    }
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ApiResponse<Object>> handleUnauthorized(Exception ex) {
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), null));
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ApiResponse<Object>> handleAllOtherExceptions(Exception ex) {
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null));
+  }
 }

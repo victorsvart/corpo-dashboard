@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
+import com.dashboard.api.domain.exception.UnauthorizedException;
 import com.dashboard.api.infrastructure.jwt.JwtUtil;
 import com.dashboard.api.service.user.UserService;
 import com.dashboard.api.service.user.dto.ChangeProfilePictureRequest;
@@ -42,10 +43,8 @@ public class UserController {
       String token = userService.login(request.username(), request.password());
       response.addHeader(HttpHeaders.SET_COOKIE, JwtUtil.MakeCookieString(token));
       return ResponseEntity.ok().build();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(Map.of("message", "Invalid username or password"));
+    } catch (UnauthorizedException unauthorized) {
+      throw unauthorized;
     }
   }
 

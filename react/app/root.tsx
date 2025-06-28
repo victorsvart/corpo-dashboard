@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Theme } from "@radix-ui/themes";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,15 +26,17 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="font-sans">
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="bg-gray-50 text-gray-900">
-        {children}
+      <body>
+        <Theme appearance="dark">
+          {children}
+        </Theme>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -41,13 +44,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-
 export default function App() {
-  return (
-    <>
-      <Outlet />
-    </>
-  )
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -68,10 +66,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="pt-16 p-4 container mx-auto">
-      <h1 className="text-2xl font-bold mb-2">{message}</h1>
-      <p className="mb-4">{details}</p>
+      <h1>{message}</h1>
+      <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto bg-gray-100 rounded">
+        <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>
         </pre>
       )}
