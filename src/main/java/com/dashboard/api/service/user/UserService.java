@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dashboard.api.domain.exception.UnauthorizedException;
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.TokenProvider;
 import com.dashboard.api.persistence.jpa.user.UserRepository;
@@ -85,7 +86,7 @@ public class UserService {
       return tokenProvider.makeToken(authentication);
     } catch (AuthenticationException ex) {
       ex.printStackTrace();
-      throw new RuntimeException("Invalid username or password");
+      throw new UnauthorizedException("Invalid username or password");
     }
   }
 
