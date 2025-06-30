@@ -1,7 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { BellIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { NavLink, useNavigation } from "react-router";
+import { Link, NavLink, useNavigation } from "react-router";
 import { Avatar, Flex } from "@radix-ui/themes";
 import type { UserPresenter } from "~/types/user/user-presenter";
 import { Skeleton } from "@radix-ui/themes/src/index.js";
@@ -109,11 +109,14 @@ export default function Navbar({ user }: { user: UserPresenter }) {
                   >
                     Your Profile
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    className="block px-4 py-2 text-sm text-gray-300 transition hover:bg-gray-700"
-                  >
-                    Settings
-                  </DropdownMenu.Item>
+
+                  <Link to="/settings">
+                    <DropdownMenu.Item
+                      className="block px-4 py-2 text-sm text-gray-300 transition hover:bg-gray-700"
+                    >
+                      Settings
+                    </DropdownMenu.Item>
+                  </Link>
                   <DropdownMenu.Item
                     className="block px-4 py-2 text-sm text-gray-300 transition hover:bg-gray-700"
                   >
