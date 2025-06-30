@@ -17,7 +17,7 @@ export default function Navbar({ user }: { user: UserPresenter }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pageInfo = useNavigation();
   return (
-    <nav className="w-screen bg-gray-900">
+    <nav className="w-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
