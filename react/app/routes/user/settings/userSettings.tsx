@@ -16,6 +16,7 @@ import { toData } from "~/helpers/toData";
 import type { UserPresenter } from "~/types/user/user-presenter";
 import type { Route } from "./+types/userSettings";
 import { Form } from "react-router";
+import { ChangeUsername } from "./changeUsername/changeUsername";
 
 export async function clientLoader() {
   const response = await fetch("http://localhost:8080/user/me", {
@@ -58,86 +59,114 @@ export default function UserSettings() {
   const [name, setName] = useState(user.name);
   const [lastName, setLastName] = useState(user.lastName);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isUsernameDialogOpen, setIsUsernameDialogOpen] = useState(false);
 
   useEffect(() => {
     setHasChanges(name !== user.name || lastName !== user.lastName);
   }, [name, lastName, user.name, user.lastName]);
 
+  const handleUsernameChange = async (newUsername: string) => {
+    const response = await fetch(`http://localhost:8080/user/updateUsername?username=${newUsername}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const res = await response.json();
+      return data(
+        { error: res.message ?? "internal server error" },
+        { status: response.status }
+      );
+    }
+    //TODO: THIS SHOULD UPDATE THE FUCKING USERNAME IN THE LAYOUT!!!
+    //TODO: ALSO THERE SHOULD BE AN ALERT!!!!!!! FOR SUCCESS!!!
+  };
+
   return (
-    <Form method="post">
-      <div className="h-screen">
-        <Flex direction="column" align="center" className="h-full">
-          <Box width="100%" maxWidth="480px">
-            <Card size="3" variant="surface">
-              <Flex direction="column" gap="4">
-                <Flex align="center" gap="3">
-                  <Avatar
-                    src={user.profilePicture || undefined}
-                    fallback={user.name.charAt(0).toUpperCase()}
-                    size="4"
-                    radius="full"
-                  />
-                  <Box>
-                    <Heading size="4">{user.fullName}</Heading>
-                    <Text size="2" color="gray">
-                      @{user.username}
-                    </Text>
-                  </Box>
-                </Flex>
-                <Separator size="4" />
-                <Flex direction="column" gap="3">
-                  <Box>
-                    <Text as="label" size="2" htmlFor="firstName">
-                      <Strong>First Name</Strong>
-                    </Text>
-                    <TextField.Root
-                      id="firstName"
-                      name="firstName"
-                      placeholder="First name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      radius="large"
-                      className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+    <>
+      <Form method="post">
+        <div className="h-screen px-3">
+          <Flex direction="column" align="center" className="h-full">
+            <Box width="100%" maxWidth="480px">
+              <Card size="3" variant="surface">
+                <Flex direction="column" gap="4">
+                  <Flex align="center" gap="3">
+                    <Avatar
+                      src={user.profilePicture || undefined}
+                      fallback={user.name.charAt(0).toUpperCase()}
+                      size="4"
+                      radius="full"
+                    />
+                    <Box>
+                      <Heading size="4">{user.fullName}</Heading>
+                      <Text size="2" color="gray">
+                        @{user.username}
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <Separator size="4" />
+                  <Flex direction="column" gap="3">
+                    <Box>
+                      <Text as="label" size="2" htmlFor="firstName">
+                        <Strong>First Name</Strong>
+                      </Text>
+                      <TextField.Root
+                        id="firstName"
+                        name="firstName"
+                        placeholder="First name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        radius="large"
+                        className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+                      />
+                    </Box>
+                    <Box>
+                      <Text as="label" size="2" htmlFor="lastName">
+                        <Strong>Last Name</Strong>
+                      </Text>
+                      <TextField.Root
+                        id="lastName"
+                        name="lastName"
+                        placeholder="Last name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        radius="large"
+                        className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+                      />
+                    </Box>
+                  </Flex>
+                  <Flex direction="row" justify="between">
+                    <Button
+                      variant="outline"
+                      size="2"
+                      type="button"
+                      onClick={() => setIsUsernameDialogOpen(true)}
                     >
-                      {/* <TextField.Slot> */}
-                      {/*   <PencilSquareIcon height="16" width="16" /> */}
-                      {/* </TextField.Slot> */}
-                    </TextField.Root>
-                  </Box>
-                  <Box>
-                    <Text as="label" size="2" htmlFor="lastName">
-                      <Strong>Last Name</Strong>
-                    </Text>
-                    <TextField.Root
-                      id="lastName"
-                      name="lastName"
-                      placeholder="Last name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      radius="large"
-                      className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+                      Change username
+                    </Button>
+                    <Button
+                      variant="solid"
+                      size="2"
+                      type="submit"
+                      disabled={!hasChanges}
                     >
-                      {/* <TextField.Slot> */}
-                      {/*   <PencilSquareIcon height="16" width="16" /> */}
-                      {/* </TextField.Slot> */}
-                    </TextField.Root>
-                  </Box>
+                      Save Changes
+                    </Button>
+                  </Flex>
                 </Flex>
-                <Flex justify="end">
-                  <Button
-                    variant="solid"
-                    size="2"
-                    type="submit"
-                    disabled={!hasChanges}
-                  >
-                    Save Changes
-                  </Button>
-                </Flex>
-              </Flex>
-            </Card>
-          </Box>
-        </Flex>
-      </div>
-    </Form>
+              </Card>
+            </Box>
+          </Flex>
+        </div>
+      </Form>
+
+      <ChangeUsername
+        userName={user.username}
+        onUsernameChange={handleUsernameChange}
+        open={isUsernameDialogOpen}
+        onOpenChange={setIsUsernameDialogOpen}
+      />
+    </>
   );
 }
