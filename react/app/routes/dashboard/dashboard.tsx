@@ -11,7 +11,8 @@ import {
   Separator,
   Container,
   Grid,
-  IconButton
+  IconButton,
+  Code
 } from "@radix-ui/themes";
 import { data } from "react-router";
 import { toData } from "~/helpers/toData";
@@ -43,7 +44,7 @@ export default function Dashboard() {
   const projectData = useLoaderData<ProjectPresenter[]>();
 
   return (
-    <Container size="4" className="min-h-screen py-6">
+    <Container size="4" className="min-h-screen px-3 py-6 bg-gradient-to-br from-gray-900 via-gray-950 to-black">
       {/* Header Section */}
       <Box mb="6">
         <Flex justify="between" align="center" mb="4">
@@ -99,7 +100,7 @@ export default function Dashboard() {
               </Tabs.List>
             </Box>
 
-            <Separator orientation="vertical" className="hidden lg:block" />
+            {/* <Separator orientation="vertical" className="hidden lg:block" /> */}
 
             {/* Content Area */}
             <Box className="flex-1 min-w-0">

@@ -86,7 +86,7 @@ export default function UserSettings() {
   return (
     <>
       <Form method="post">
-        <div className="h-screen px-3">
+        <div className="h-screen px-3 py-4">
           <Flex direction="column" align="center" className="h-full">
             <Box width="100%" maxWidth="480px">
               <Card size="3" variant="surface">

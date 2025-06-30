@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <>
       <div className="h-screen">
-        <Flex gap="7" direction="column">
+        <Flex direction="column">
           <Navbar user={userInfo}></Navbar>
           <Outlet />
         </Flex>
