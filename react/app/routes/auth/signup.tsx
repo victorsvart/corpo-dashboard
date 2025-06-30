@@ -1,37 +1,8 @@
-import {
-  LockClosedIcon,
-  LockOpenIcon,
-  PencilSquareIcon,
-  UserIcon,
-  ExclamationTriangleIcon,
-} from "@heroicons/react/16/solid";
-
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Code,
-  Spinner,
-  TextField,
-  Callout,
-  Separator,
-  Container,
-  Text,
-} from "@radix-ui/themes";
-
+import { ExclamationTriangleIcon, FingerPrintIcon, LockClosedIcon, LockOpenIcon, PencilSquareIcon, UserIcon } from "@heroicons/react/16/solid";
+import { Box, Button, Card, Code, Container, Flex, Separator, Spinner, TextField, Text, Callout } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
-import {
-  Form,
-  redirect,
-  useActionData,
-  useNavigation,
-  data,
-  NavLink,
-  Link,
-} from "react-router";
-
-import type { Route } from "./+types/login";
+import { data, Form, Link, redirect, useActionData, useNavigation } from "react-router";
+import type { Route } from "./+types/signup";
 
 export async function clientLoader() {
   const response = await fetch("http://localhost:8080/user/me", {
@@ -49,30 +20,36 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const form = await request.formData();
   const username = form.get("username");
   const password = form.get("password");
+  const firstName = form.get("firstName");
+  const lastName = form.get("lastName");
 
-  if (typeof username !== "string" || typeof password !== "string") {
-    throw new Error("Invalid form input");
+  if (typeof username !== "string" || typeof password !== "string" ||
+    typeof firstName !== "string" || typeof lastName !== "string") {
+    return data(
+      { error: "Invalid form" },
+      { status: 401 }
+    );
   }
 
-  const response = await fetch("http://localhost:8080/user/login", {
+  const response = await fetch("http://localhost:8080/user/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ username, password, firstName, lastName }),
   });
 
   if (!response.ok) {
     const res = await response.json();
     return data(
-      { error: res.message ?? "Login failed" },
+      { error: res.message ?? "Sign up failed" },
       { status: response.status }
     );
   }
 
-  return redirect("/dashboard");
+  return redirect("/auth/login");
 }
 
-export default function Login() {
+export default function SignUp() {
   const actionData = useActionData<{ error?: string }>();
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
@@ -124,38 +101,58 @@ export default function Login() {
                   </TextField.Slot>
                 </TextField.Root>
 
+                <TextField.Root
+                  name="firstName"
+                  placeholder="First name"
+                  radius="large"
+                  className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+                >
+                  <TextField.Slot>
+                    <FingerPrintIcon height="16" width="16" />
+                  </TextField.Slot>
+                </TextField.Root>
+
+                <TextField.Root
+                  name="lastName"
+                  placeholder="Last name"
+                  radius="large"
+                  className="transition-colors duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+                >
+                  <TextField.Slot>
+                    <FingerPrintIcon height="16" width="16" />
+                  </TextField.Slot>
+                </TextField.Root>
+
                 <Flex direction="column" gap="2" className="w-full">
                   <Flex direction="row" gap="3" justify="center" className="w-full">
-                    <Link to="/auth/signup">
+                    <Link to="/auth/signin">
                       <Button
                         disabled={loading}
-                        variant="outline"
+                        variant="solid"
                         className="flex-1"
                       >
                         <Spinner loading={loading}>
                           <PencilSquareIcon width="16" height="16" />
                         </Spinner>
-                        Sign Up
+                        Back to Sign In
                       </Button>
                     </Link>
-
                     <Button
                       disabled={loading}
-                      variant="solid"
-                      type="submit"
+                      variant="outline"
                       className="flex-1"
                     >
                       <Spinner loading={loading}>
-                        <LockOpenIcon width="16" height="16" />
+                        <PencilSquareIcon width="16" height="16" />
                       </Spinner>
-                      Sign in
+                      Sign Up
                     </Button>
                   </Flex>
 
                   <Separator my="3" size="4" />
 
                   <Text size="2" color="gray" align="center">
-                    Are you a recruiter? Dive right in below.
+                    Are you a recruiter? No need to sign up!
                   </Text>
 
                   <Button
@@ -187,5 +184,5 @@ export default function Login() {
         </Flex>
       </div>
     </Form>
-  );
+  )
 }
