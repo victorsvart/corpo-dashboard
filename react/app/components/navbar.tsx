@@ -1,8 +1,10 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { BellIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigation } from "react-router";
 import { Avatar, Flex } from "@radix-ui/themes";
+import type { UserPresenter } from "~/types/user/user-presenter";
+import { Skeleton } from "@radix-ui/themes/src/index.js";
 
 const links = [
   { to: "/dashboard", name: "Dashboard" },
@@ -11,10 +13,9 @@ const links = [
   { to: "/servers", name: "Servers" },
 ]
 
-
-export default function Navbar() {
+export default function Navbar({ user }: { user: UserPresenter }) {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const pageInfo = useNavigation();
   return (
     <nav className="w-screen bg-gray-900">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -43,7 +44,7 @@ export default function Navbar() {
               <img
                 className="h-8 w-auto"
                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                alt="Your Company"
+                alt="Corpo Dashboard"
               />
             </div>
             <div className="hidden sm:ml-6 sm:block">
@@ -86,9 +87,13 @@ export default function Navbar() {
               <DropdownMenu.Trigger asChild>
                 <button className="ml-3 rounded-full bg-gray-800 text-sm focus:outline-none">
                   <Flex>
-                    <Avatar src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=256&h=256&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop"
-                      fallback="A">
-                    </Avatar>
+                    {pageInfo.state === "loading" ? (
+                      <Skeleton></Skeleton>
+                    ) :
+                      <Avatar src={user.profilePicture}
+                        fallback="A">
+                      </Avatar>
+                    }
                   </Flex>
                   <span className="sr-only">Open user menu</span>
                 </button>

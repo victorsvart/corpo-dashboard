@@ -69,7 +69,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     );
   }
 
-  return redirect("/home");
+  return redirect("/dashboard");
 }
 
 export default function Login() {
