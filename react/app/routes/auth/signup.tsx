@@ -4,6 +4,18 @@ import { useEffect, useState } from "react";
 import { data, Form, Link, redirect, useActionData, useNavigation } from "react-router";
 import type { Route } from "./+types/signup";
 
+export async function clientLoader() {
+  const response = await fetch("http://localhost:8080/user/me", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+
+  if (response.status !== 403) {
+    return redirect("/home");
+  }
+}
+
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const form = await request.formData();
   const username = form.get("username");

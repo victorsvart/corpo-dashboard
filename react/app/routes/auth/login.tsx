@@ -18,7 +18,6 @@ import {
   Separator,
   Container,
   Text,
-  Blockquote,
 } from "@radix-ui/themes";
 
 import { useEffect, useState } from "react";
