@@ -25,7 +25,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
   @Query(value = """
       SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
-      FROM project_servers
+      FROM "ProjectServers"
       WHERE project_id = :projectId
       AND server_id IN (:serverIds)
       """, nativeQuery = true)

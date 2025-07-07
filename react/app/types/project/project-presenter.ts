@@ -4,4 +4,5 @@ export type ProjectPresenter = {
   id: number;
   name: string;
   servers: ServerPresenter[];
+  status: string;
 }

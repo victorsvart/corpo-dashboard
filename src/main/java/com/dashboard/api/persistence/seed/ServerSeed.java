@@ -12,7 +12,7 @@ import com.dashboard.api.service.server.dto.ServerRegisterInput;
 import jakarta.persistence.EntityExistsException;
 
 @Component
-@Order(4)
+@Order(5)
 public class ServerSeed implements CommandLineRunner {
   private final ServerService serverService;
 

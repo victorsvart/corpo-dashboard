@@ -23,39 +23,48 @@ import com.dashboard.api.service.server.dto.ServerRegisterInput;
 @RequestMapping("/server")
 public class ServerController {
 
-    private ServerService serverService;
+  private ServerService serverService;
 
-    public ServerController(ServerService serverService) {
-        this.serverService = serverService;
-    }
+  public ServerController(ServerService serverService) {
+    this.serverService = serverService;
+  }
 
-    @GetMapping("/getAll")
-    @PreAuthorize("hasRole('USER')")
-    public List<Server> getAll() {
-        return serverService.getAll();
-    }
+  @GetMapping("/getAll")
+  @PreAuthorize("hasRole('USER')")
+  public List<ServerPresenter> getAll() {
+    List<Server> servers = serverService.getAll();
+    return ServerPresenter.fromMany(servers);
+  }
 
-    @GetMapping("/get")
-    @PreAuthorize("hasRole('USER')")
-    public ServerPresenter get(@RequestParam Long id) {
-        return serverService.get(id);
-    }
+  @GetMapping("/get")
+  @PreAuthorize("hasRole('USER')")
+  public ServerPresenter get(@RequestParam Long id) {
+    return serverService.get(id);
+  }
 
-    @PostMapping("/register")
-    @PreAuthorize("hasRole('USER')")
-    public Server register(@RequestBody ServerRegisterInput input) {
-        return serverService.register(input);
-    }
+  @PostMapping("/register")
+  @PreAuthorize("hasRole('USER')")
+  public ServerPresenter register(@RequestBody ServerRegisterInput input) {
+    Server server = serverService.register(input);
+    return ServerPresenter.from(server);
+  }
 
-    @PutMapping("/update")
-    @PreAuthorize("hasRole('USER')")
-    public Server update(@RequestBody ServerRegisterInput input) {
-        return serverService.update(input);
-    }
+  @PutMapping("/update")
+  @PreAuthorize("hasRole('USER')")
+  public ServerPresenter update(@RequestBody ServerRegisterInput input) {
+    Server server = serverService.update(input);
+    return ServerPresenter.from(server);
+  }
 
-    @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('USER')")
-    public String delete(@RequestParam Long id) {
-        return serverService.delete(id);
-    }
+  @DeleteMapping("/delete")
+  @PreAuthorize("hasRole('USER')")
+  public String delete(@RequestParam Long id) {
+    return serverService.delete(id);
+  }
+
+  @PostMapping("/setActive")
+  @PreAuthorize("hasRole('USER')")
+  public ServerPresenter deactivateServer(@RequestParam Long id) {
+    return serverService.deactivateServer(id);
+  }
 }

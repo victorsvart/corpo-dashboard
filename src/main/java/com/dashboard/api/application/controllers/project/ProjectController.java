@@ -23,39 +23,42 @@ import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 @RequestMapping("/project")
 public class ProjectController {
 
-    private ProjectService projectService;
+  private ProjectService projectService;
 
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
+  public ProjectController(ProjectService projectService) {
+    this.projectService = projectService;
+  }
 
-    @GetMapping("/getAll")
-    @PreAuthorize("hasRole('USER')")
-    public List<Project> getAll() {
-        return projectService.getAll();
-    }
+  @GetMapping("/getAll")
+  @PreAuthorize("hasRole('USER')")
+  public List<ProjectPresenter> getAll() {
+    List<Project> projects = projectService.getAll();
+    return ProjectPresenter.fromMany(projects);
+  }
 
-    @GetMapping("/get")
-    @PreAuthorize("hasRole('USER')")
-    public ProjectPresenter get(@RequestParam Long id) {
-        return projectService.get(id);
-    }
+  @GetMapping("/get")
+  @PreAuthorize("hasRole('USER')")
+  public ProjectPresenter get(@RequestParam Long id) {
+    return projectService.get(id);
+  }
 
-    @PostMapping("/register")
-    @PreAuthorize("hasRole('USER')")
-    public Project register(@RequestBody ProjectRegisterInput input) {
-        return projectService.register(input);
-    }
+  @PostMapping("/register")
+  @PreAuthorize("hasRole('USER')")
+  public ProjectPresenter register(@RequestBody ProjectRegisterInput input) {
+    Project project = projectService.register(input);
+    return ProjectPresenter.from(project);
+  }
 
-    @PutMapping("/update")
-    @PreAuthorize("hasRole('USER')")
-    public Project update(@RequestBody ProjectRegisterInput input) {
-        return projectService.update(input);
-    }
+  @PutMapping("/update")
+  @PreAuthorize("hasRole('USER')")
+  public ProjectPresenter update(@RequestBody ProjectRegisterInput input) {
+    Project project = projectService.update(input);
+    return ProjectPresenter.from(project);
+  }
 
-    @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('USER')")
-    public String delete(@RequestParam Long id) {
-        return projectService.delete(id);
-    }
+  @DeleteMapping("/delete")
+  @PreAuthorize("hasRole('USER')")
+  public String delete(@RequestParam Long id) {
+    return projectService.delete(id);
+  }
 }

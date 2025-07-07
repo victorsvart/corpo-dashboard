@@ -1,10 +1,17 @@
 package com.dashboard.api.domain.user;
 
+import java.time.LocalDateTime;
 import java.util.Set;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.dashboard.api.domain.authority.Authority;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +23,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Users")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +33,14 @@ public class User {
   private String lastName;
   private String password;
   private String profilePicture;
+
+  @CreatedDate
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt = LocalDateTime.now();
+
+  @LastModifiedDate
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "UserAuthority", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "authority"))
