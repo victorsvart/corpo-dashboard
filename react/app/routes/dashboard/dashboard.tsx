@@ -5,14 +5,10 @@ import {
   Tabs,
   Text,
   Heading,
-  Badge,
-  Avatar,
   Button,
   Separator,
   Container,
   Grid,
-  IconButton,
-  Code
 } from "@radix-ui/themes";
 import { data } from "react-router";
 import { toData } from "~/helpers/toData";
@@ -42,7 +38,7 @@ export async function clientLoader() {
 
 export default function Dashboard() {
   const projectData = useLoaderData<ProjectPresenter[]>();
-
+  console.log(projectData)
   return (
     <Container size="4" className="min-h-screen px-3 py-6 bg-gradient-to-br from-gray-900 via-gray-950 to-black">
       {/* Header Section */}

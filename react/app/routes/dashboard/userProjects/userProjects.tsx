@@ -1,15 +1,14 @@
 import {
+  Badge,
   Box,
+  Button,
   Card,
   Flex,
-  Text, Heading,
-  Badge,
-  Button,
   Grid,
+  Heading,
   IconButton,
   Separator,
-  Dialog,
-  TextField
+  Text
 } from "@radix-ui/themes";
 import type { ProjectPresenter } from "~/types/project/project-presenter";
 
@@ -120,14 +119,25 @@ export default function UserProjects({ projects }: Props) {
             {/* Status Footer */}
             <Box className="px-4 py-2 border-t">
               <Flex justify="between" align="center">
-                <Flex align="center" gap="2">
-                  <Box className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <Flex align="center" gap="2" hidden={project.servers.length < 1}>
+                  <Box
+                    className={`w-2 h-2 rounded-full animate-pulse ${project.status === 'Healthy'
+                      ? 'bg-green-500'
+                      : project.status === 'Deploying'
+                        ? 'bg-yellow-400'
+                        : 'bg-gray-400'
+                      }`}
+                  />
                   <Text size="1" color="gray">
-                    Healthy
+                    {project.status}
                   </Text>
                 </Flex>
 
-                <Text size="1" color="gray">
+                <Flex align="center" gap="2">
+                  ---
+                </Flex>
+
+                <Text size="1" color="gray" hidden={project.servers.length < 1}>
                   Last updated: 2h ago
                 </Text>
               </Flex>

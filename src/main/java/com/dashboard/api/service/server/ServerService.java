@@ -24,7 +24,7 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   }
 
   public List<Server> getAll() {
-    return serverRepository.findAll();
+    return (serverRepository.findAll());
   }
 
   public ServerPresenter get(Long id) throws EntityNotFoundException {
@@ -60,5 +60,14 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   public String delete(Long id) throws IllegalArgumentException {
     serverRepository.deleteById(id);
     return "Deleted sucessfully";
+  }
+
+  public ServerPresenter deactivateServer(Long id) {
+    Server server = serverRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
+
+    server.setActive(false);
+    serverRepository.save(server);
+    return ServerPresenter.from(server);
   }
 }

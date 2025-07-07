@@ -6,57 +6,49 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import com.dashboard.api.domain.project.Project;
+import com.dashboard.api.domain.server.Server;
+import com.dashboard.api.domain.serverStatus.ProjectStatus;
+import com.dashboard.api.persistence.jpa.project.ProjectRepository;
 import com.dashboard.api.persistence.jpa.server.ServerRepository;
-import com.dashboard.api.service.project.ProjectService;
-import com.dashboard.api.service.project.dto.ProjectRegisterInput;
-
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+import com.dashboard.api.persistence.jpa.serverStatus.ProjectStatusRepository;
 
 @Component
-@Order(5)
+@Order(6)
 public class ProjectSeeder implements CommandLineRunner {
-  private final ProjectService projectService;
+  private final ProjectRepository projectRepository;
+  private final ProjectStatusRepository statusRepository;
   private final ServerRepository serverRepository;
 
-  public ProjectSeeder(ProjectService projectService,
+  public ProjectSeeder(ProjectRepository projectRepository, ProjectStatusRepository statusRepository,
       ServerRepository serverRepository) {
-    this.projectService = projectService;
+    this.projectRepository = projectRepository;
+    this.statusRepository = statusRepository;
     this.serverRepository = serverRepository;
   }
 
   @Override
   public void run(String... args) throws Exception {
-    try {
-      Long server1Id = serverRepository.getByName("SERVER-001")
-          .orElseThrow(() -> new Exception("internal seeding error"))
-          .getId();
+    if (projectRepository.count() > 0)
+      return;
 
-      Long server2Id = serverRepository.getByName("SERVER-002")
-          .orElseThrow(() -> new Exception("internal seeding error"))
-          .getId();
+    ProjectStatus healthyStatus = statusRepository.findByName("HEALTHY")
+        .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
 
-      Long server3Id = serverRepository.getByName("SERVER-003")
-          .orElseThrow(() -> new Exception("internal seeding error"))
-          .getId();
+    ProjectStatus deployingStatus = statusRepository.findByName("DEPLOYING")
+        .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
 
-      List<ProjectRegisterInput> projects = List.of(
-          new ProjectRegisterInput("PROJECT-ALPHA", List.of(server1Id)),
-          new ProjectRegisterInput("PROJECT-BETA", List.of(server2Id)),
-          new ProjectRegisterInput("PROJECT-GAMMA", List.of(server1Id, server3Id)));
+    List<Server> allServers = serverRepository.findAll();
+    List<Server> subset = allServers.size() > 1 ? allServers.subList(0, 2) : allServers;
+    Project p1 = new Project("Alpha Project", subset);
+    p1.setStatus(healthyStatus);
 
-      for (ProjectRegisterInput project : projects) {
-        try {
-          projectService.register(project);
-          System.out.println("Registered project: " + project.name);
-        } catch (EntityExistsException e) {
-          System.out.println("Project already exists or server already assigned: " + project.name);
-        } catch (EntityNotFoundException e) {
-          System.out.println("One or more servers not found for project: " + project.name);
-        }
-      }
-    } catch (Exception e) {
-      System.out.println("Unexpected error while seeding projects: " + e.getMessage());
-    }
+    Project p2 = new Project("Beta Project", subset);
+    p2.setStatus(deployingStatus);
+
+    Project p3 = new Project("Gamma Project");
+    p3.setStatus(healthyStatus);
+
+    projectRepository.saveAll(List.of(p1, p2, p3));
   }
 }
