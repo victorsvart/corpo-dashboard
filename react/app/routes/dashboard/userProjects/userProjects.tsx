@@ -139,7 +139,6 @@ export default function UserProjects({ projects }: Props) {
 
                 <Text size="1" color="gray" hidden={project.servers.length < 1}>
                   {`Last update: ${project.lastUpdate} ago`}
-                  {/* Last updated: 2h ago */}
                 </Text>
               </Flex>
             </Box>
