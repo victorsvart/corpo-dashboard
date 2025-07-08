@@ -42,12 +42,18 @@ public class ProjectSeeder implements CommandLineRunner {
     List<Server> subset = allServers.size() > 1 ? allServers.subList(0, 2) : allServers;
     Project p1 = new Project("Alpha Project", subset);
     p1.setStatus(healthyStatus);
+    p1.setDetails(
+        "Alpha Project focuses on real-time analytics for financial markets. Designed for speed and accuracy, it processes millions of data points per second to help institutions make smarter trades.");
 
     Project p2 = new Project("Beta Project", subset);
     p2.setStatus(deployingStatus);
+    p2.setDetails(
+        "Beta Project is a next-generation deployment automation tool. It simplifies CI/CD workflows and enables teams to ship code faster and more reliably across multiple environments.");
 
     Project p3 = new Project("Gamma Project");
     p3.setStatus(healthyStatus);
+    p3.setDetails(
+        "Gamma Project is a standalone initiative to modernize legacy systems. Its goal is to re-architect critical infrastructure with scalable, cloud-native technologies.");
 
     projectRepository.saveAll(List.of(p1, p2, p3));
   }

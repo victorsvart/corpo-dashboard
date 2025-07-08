@@ -38,6 +38,7 @@ public class Mapper {
   }
 
   public static void fromTo(ProjectRegisterInput input, Project project) {
-    project.update(input.name);
+    String details = input.details != null ? input.details : "";
+    project.update(input.name, details);
   }
 }
