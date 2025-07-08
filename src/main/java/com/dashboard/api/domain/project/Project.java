@@ -52,6 +52,9 @@ public class Project {
   @JoinColumn(name = "status_id", nullable = false, unique = false)
   private ProjectStatus status;
 
+  @Column(name = "details", nullable = true)
+  private String details;
+
   public Project() {
   }
 
@@ -69,8 +72,9 @@ public class Project {
     this.name = name;
   }
 
-  public void update(String name) {
+  public void update(String name, String details) {
     setName(name);
+    setDetails(details);
   }
 
   public Long getId() {
@@ -110,6 +114,17 @@ public class Project {
     this.status = status;
   }
 
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    if (details.isEmpty() || details.isBlank())
+      return;
+
+    this.details = details;
+  }
+
   public String getStatusName() {
     return status.getName();
   }
@@ -117,4 +132,5 @@ public class Project {
   public LocalDateTime getUpdatedAt() {
     return updatedAt;
   }
+
 }

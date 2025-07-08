@@ -16,17 +16,20 @@ public class ProjectPresenter {
   public List<ServerPresenter> servers;
   public String status;
   public String lastUpdate;
+  public String details;
 
   public ProjectPresenter(
       Long id,
       String name,
       List<ServerPresenter> servers,
+      String details,
       String status,
       String lastUpdated) {
     this.id = id;
     this.name = name;
     this.servers = servers;
     this.status = status;
+    this.details = details;
     this.lastUpdate = lastUpdated;
   }
 
@@ -36,6 +39,7 @@ public class ProjectPresenter {
         project.getId(),
         project.getName(),
         servers,
+        project.getDetails(),
         StringUtils.capitalizeWord(project.getStatusName()),
         TimeUtils.formatRelativeTime(project.getUpdatedAt(), LocalDateTime.now()));
 
