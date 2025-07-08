@@ -113,4 +113,8 @@ public class Project {
   public String getStatusName() {
     return status.getName();
   }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
 }
