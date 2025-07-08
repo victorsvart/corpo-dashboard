@@ -5,4 +5,5 @@ export type ProjectPresenter = {
   name: string;
   servers: ServerPresenter[];
   status: string;
+  lastUpdate: string;
 }
