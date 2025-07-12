@@ -1,9 +1,8 @@
 package com.dashboard.api.service.server.dto;
 
+import com.dashboard.api.domain.server.Server;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.dashboard.api.domain.server.Server;
 
 public class ServerPresenter {
   public Long id;
@@ -17,14 +16,10 @@ public class ServerPresenter {
   }
 
   public static ServerPresenter from(Server server) {
-    return new ServerPresenter(server.getId(),
-        server.getName(),
-        server.isActive());
+    return new ServerPresenter(server.getId(), server.getName(), server.isActive());
   }
 
   public static List<ServerPresenter> fromMany(List<Server> servers) {
-    return servers.stream()
-        .map(ServerPresenter::from)
-        .collect(Collectors.toList());
+    return servers.stream().map(ServerPresenter::from).collect(Collectors.toList());
   }
 }

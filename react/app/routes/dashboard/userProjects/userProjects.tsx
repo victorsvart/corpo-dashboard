@@ -56,7 +56,7 @@ export default function UserProjects({ projects }: Props) {
                     {project.name}
                   </Heading>
                   <Text size="2" color="gray">
-                    Project ID: {project.id}
+                    Owner: Victor Moraes
                   </Text>
                 </Box>
 

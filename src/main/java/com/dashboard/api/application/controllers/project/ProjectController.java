@@ -1,7 +1,10 @@
 package com.dashboard.api.application.controllers.project;
 
+import com.dashboard.api.domain.project.Project;
+import com.dashboard.api.service.project.ProjectService;
+import com.dashboard.api.service.project.dto.ProjectPresenter;
+import com.dashboard.api.service.project.dto.ProjectRegisterInput;
 import java.util.List;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dashboard.api.domain.project.Project;
-import com.dashboard.api.service.project.ProjectService;
-import com.dashboard.api.service.project.dto.ProjectPresenter;
-import com.dashboard.api.service.project.dto.ProjectRegisterInput;
-
+/**
+ * REST controller for managing projects.
+ *
+ * <p>Provides endpoints for CRUD operations on Project entities, including retrieval, creation,
+ * update, and deletion. Access to these endpoints is restricted to users with the 'USER' role.
+ */
 @RestController
 @EnableMethodSecurity
 @RequestMapping("/project")

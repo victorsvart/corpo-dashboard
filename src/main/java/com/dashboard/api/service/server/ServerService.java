@@ -1,18 +1,15 @@
 package com.dashboard.api.service.server;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.server.ServerRepository;
 import com.dashboard.api.service.base.BaseService;
 import com.dashboard.api.service.mapper.Mapper;
 import com.dashboard.api.service.server.dto.ServerPresenter;
 import com.dashboard.api.service.server.dto.ServerRegisterInput;
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ServerService implements BaseService<Server, ServerPresenter, ServerRegisterInput> {
@@ -28,8 +25,10 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   }
 
   public ServerPresenter get(Long id) throws EntityNotFoundException {
-    Server server = serverRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Server not found"));
+    Server server =
+        serverRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Server not found"));
 
     return ServerPresenter.from(server);
   }
@@ -47,11 +46,12 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   }
 
   public Server update(ServerRegisterInput input) throws IllegalArgumentException {
-    if (input.id.isEmpty())
-      throw new IllegalArgumentException("id is required!");
+    if (input.id.isEmpty()) throw new IllegalArgumentException("id is required!");
 
-    Server server = serverRepository.findById(input.id.get())
-        .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
+    Server server =
+        serverRepository
+            .findById(input.id.get())
+            .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
 
     Mapper.fromTo(input, server);
     return serverRepository.save(server);
@@ -63,8 +63,10 @@ public class ServerService implements BaseService<Server, ServerPresenter, Serve
   }
 
   public ServerPresenter deactivateServer(Long id) {
-    Server server = serverRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
+    Server server =
+        serverRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Can't find especified server."));
 
     server.setActive(false);
     serverRepository.save(server);
