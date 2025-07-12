@@ -1,18 +1,22 @@
 package com.dashboard.api.persistence.seed;
 
+import com.dashboard.api.domain.project.Project;
+import com.dashboard.api.domain.projectstatus.ProjectStatus;
+import com.dashboard.api.domain.server.Server;
+import com.dashboard.api.persistence.jpa.project.ProjectRepository;
+import com.dashboard.api.persistence.jpa.projectstatus.ProjectStatusRepository;
+import com.dashboard.api.persistence.jpa.server.ServerRepository;
 import java.util.List;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.dashboard.api.domain.project.Project;
-import com.dashboard.api.domain.server.Server;
-import com.dashboard.api.domain.serverStatus.ProjectStatus;
-import com.dashboard.api.persistence.jpa.project.ProjectRepository;
-import com.dashboard.api.persistence.jpa.server.ServerRepository;
-import com.dashboard.api.persistence.jpa.serverStatus.ProjectStatusRepository;
-
+/**
+ * Seeder component to initialize default projects in the database at application startup.
+ *
+ * <p>This class implements CommandLineRunner and seeds projects only if none exist. It requires
+ * existing ProjectStatus and Server entries to associate with projects.
+ */
 @Component
 @Order(6)
 public class ProjectSeeder implements CommandLineRunner {
@@ -20,7 +24,16 @@ public class ProjectSeeder implements CommandLineRunner {
   private final ProjectStatusRepository statusRepository;
   private final ServerRepository serverRepository;
 
-  public ProjectSeeder(ProjectRepository projectRepository, ProjectStatusRepository statusRepository,
+  /**
+   * Constructs a new ProjectSeeder with the given repositories.
+   *
+   * @param projectRepository the repository for managing projects
+   * @param statusRepository the repository for managing project statuses
+   * @param serverRepository the repository for managing servers
+   */
+  public ProjectSeeder(
+      ProjectRepository projectRepository,
+      ProjectStatusRepository statusRepository,
       ServerRepository serverRepository) {
     this.projectRepository = projectRepository;
     this.statusRepository = statusRepository;
@@ -29,14 +42,19 @@ public class ProjectSeeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    if (projectRepository.count() > 0)
+    if (projectRepository.count() > 0) {
       return;
+    }
 
-    ProjectStatus healthyStatus = statusRepository.findByName("HEALTHY")
-        .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
+    ProjectStatus healthyStatus =
+        statusRepository
+            .findByName("HEALTHY")
+            .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
 
-    ProjectStatus deployingStatus = statusRepository.findByName("DEPLOYING")
-        .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
+    ProjectStatus deployingStatus =
+        statusRepository
+            .findByName("DEPLOYING")
+            .orElseThrow(() -> new IllegalStateException("Missing status: HEALTHY"));
 
     List<Server> allServers = serverRepository.findAll();
     List<Server> subset = allServers.size() > 1 ? allServers.subList(0, 2) : allServers;

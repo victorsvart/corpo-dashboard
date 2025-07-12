@@ -1,16 +1,5 @@
 package com.dashboard.api.service.user;
 
-import java.util.List;
-
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.dashboard.api.domain.exception.UnauthorizedException;
 import com.dashboard.api.domain.user.User;
 import com.dashboard.api.infrastructure.jwt.TokenProvider;
@@ -21,9 +10,17 @@ import com.dashboard.api.service.user.dto.RegisterRequest;
 import com.dashboard.api.service.user.dto.UpdateUserInput;
 import com.dashboard.api.service.user.dto.UserPresenter;
 import com.dashboard.api.service.user.dto.UserWithTokenPresenter;
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -48,12 +45,13 @@ public class UserService {
   }
 
   private String remakeToken(User user) {
-    List<SimpleGrantedAuthority> authorities = user.getAuthorities().stream()
-        .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
-        .toList();
+    List<SimpleGrantedAuthority> authorities =
+        user.getAuthorities().stream()
+            .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+            .toList();
 
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-        user.getUsername(), null, authorities);
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return tokenProvider.makeToken(authentication);
   }
@@ -80,8 +78,8 @@ public class UserService {
 
   public String login(String username, String password) {
     try {
-      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
-          password);
+      UsernamePasswordAuthenticationToken authenticationToken =
+          new UsernamePasswordAuthenticationToken(username, password);
       Authentication authentication = authenticationManager.authenticate(authenticationToken);
       return tokenProvider.makeToken(authentication);
     } catch (AuthenticationException ex) {
@@ -106,7 +104,6 @@ public class UserService {
 
     String token = usernameChanged ? remakeToken(user) : null;
     return new UserWithTokenPresenter(UserPresenter.from(user), token);
-
   }
 
   public void changePassword(String password) {

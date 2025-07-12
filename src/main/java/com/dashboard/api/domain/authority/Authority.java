@@ -1,19 +1,21 @@
 package com.dashboard.api.domain.authority;
 
-import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Set;
 
+/**
+ * Represents a security authority (role) granted to a user.
+ *
+ * <p>This entity corresponds to the "Authorities" table and stores roles like "ROLE_USER".
+ */
 @Entity
 @Table(name = "Authorities")
 public class Authority {
-  @Id
-  private String authority;
+  @Id private String authority;
 
-  protected Authority() {
-  }
+  protected Authority() {}
 
   public Authority(String authority) {
     this.authority = authority;

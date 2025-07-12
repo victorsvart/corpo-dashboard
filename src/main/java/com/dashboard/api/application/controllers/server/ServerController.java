@@ -1,7 +1,10 @@
 package com.dashboard.api.application.controllers.server;
 
+import com.dashboard.api.domain.server.Server;
+import com.dashboard.api.service.server.ServerService;
+import com.dashboard.api.service.server.dto.ServerPresenter;
+import com.dashboard.api.service.server.dto.ServerRegisterInput;
 import java.util.List;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dashboard.api.domain.server.Server;
-import com.dashboard.api.service.server.ServerService;
-import com.dashboard.api.service.server.dto.ServerPresenter;
-import com.dashboard.api.service.server.dto.ServerRegisterInput;
-
+/**
+ * REST controller for managing servers.
+ *
+ * <p>Provides endpoints to perform CRUD operations on Server entities, including retrieval,
+ * creation, update, deletion, and setting server activation status. Access to these endpoints is
+ * limited to users with the 'USER' role.
+ */
 @RestController
 @EnableMethodSecurity
 @RequestMapping("/server")

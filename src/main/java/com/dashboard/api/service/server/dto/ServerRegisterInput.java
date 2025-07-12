@@ -6,12 +6,10 @@ public class ServerRegisterInput {
   public Optional<Long> id;
   public String name;
 
-  public ServerRegisterInput() {
-  }
+  public ServerRegisterInput() {}
 
   public ServerRegisterInput(String name) {
     this.name = name;
-
   }
 
   public String getName() {

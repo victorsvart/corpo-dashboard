@@ -1,19 +1,23 @@
 package com.dashboard.api.infrastructure.jwt;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+/**
+ * JWT authentication filter that processes incoming HTTP requests once per request.
+ *
+ * <p>Extracts JWT tokens from the "Authorization" header (Bearer token) or from cookies, validates
+ * the token, and sets the authentication in the security context if valid.
+ */
 public class JwtFilter extends OncePerRequestFilter {
   private static final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -46,7 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
-      @NonNull FilterChain filterChain) throws ServletException, IOException {
+      @NonNull FilterChain filterChain)
+      throws ServletException, IOException {
     String token = extractToken(request);
     if (token != null && tokenProvider.validateToken(token)) {
       Authentication authentication = tokenProvider.setAuthentication(token);

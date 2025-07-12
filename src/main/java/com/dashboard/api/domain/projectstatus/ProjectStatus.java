@@ -1,12 +1,21 @@
-package com.dashboard.api.domain.serverStatus;
+package com.dashboard.api.domain.projectstatus;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import jakarta.persistence.*;
-
+/**
+ * Represents a status that a project can have.
+ *
+ * <p>This entity maps to the "ProjectStatuses" table and includes fields for the unique identifier,
+ * the status name, and timestamps for creation and last update.
+ */
 @Entity
 @Table(name = "ProjectStatuses")
 public class ProjectStatus {
