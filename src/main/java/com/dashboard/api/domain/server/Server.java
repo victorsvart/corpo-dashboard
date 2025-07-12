@@ -34,6 +34,9 @@ public class Server {
   private String name;
 
   private boolean active = true;
+  // TODO: add status and region
+  // private String status;
+  // private String region;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
@@ -83,4 +86,10 @@ public class Server {
   public void setActive(boolean active) {
     this.active = active;
   }
+
+  public String getStatus() {
+    return this.status;
+  }
+
+  public void setStatus()
 }
