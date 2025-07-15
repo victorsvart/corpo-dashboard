@@ -11,7 +11,7 @@ import java.util.Set;
  * <p>This entity corresponds to the "Authorities" table and stores roles like "ROLE_USER".
  */
 @Entity
-@Table(name = "Authorities")
+@Table(name = "authorities")
 public class Authority {
   @Id private String authority;
 

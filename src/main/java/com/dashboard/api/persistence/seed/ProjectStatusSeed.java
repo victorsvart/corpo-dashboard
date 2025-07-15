@@ -37,6 +37,10 @@ public class ProjectStatusSeed implements CommandLineRunner {
         return;
       }
 
+      if (ss.getName() == "HEALTHY") {
+        ss.setAsDefault();
+      }
+
       projectStatusRepository.save(ss);
     }
   }

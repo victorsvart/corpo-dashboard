@@ -4,7 +4,7 @@ import com.dashboard.api.domain.project.Project;
 import com.dashboard.api.helpers.StringUtils;
 import com.dashboard.api.helpers.TimeUtils;
 import com.dashboard.api.service.server.dto.ServerPresenter;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +57,7 @@ public class ProjectPresenter {
         servers,
         project.getDetails(),
         StringUtils.capitalizeWord(project.getStatusName()),
-        TimeUtils.formatRelativeTime(project.getUpdatedAt(), LocalDateTime.now()));
+        TimeUtils.formatRelativeTime(project.getUpdatedAt(), Instant.now()));
   }
 
   /**

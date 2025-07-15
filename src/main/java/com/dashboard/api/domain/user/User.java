@@ -21,22 +21,27 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 /**
  * Represents a user in the system.
  *
- * <p>Maps to the "Users" table and stores user information such as username, password, full name,
- * profile picture, and associated authorities (roles). Supports auditing for creation and update
+ * <p>Maps to the "app_users" table and stores user information such as username, password, full
+ * name, profile picture, and associated authorities. Supports auditing for creation and update
  * timestamps.
  */
 @Entity
-@Table(name = "Users")
+@Table(name = "app_users")
 @EntityListeners(AuditingEntityListener.class)
 public class User {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
+  @Column(nullable = false, unique = true)
   private String username;
+
+  @Column(nullable = false)
+  private String password;
+
   private String name;
   private String lastName;
-  private String password;
   private String profilePicture;
 
   @CreatedDate
@@ -47,83 +52,88 @@ public class User {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  /**
-   * Authorities (roles/permissions) assigned to the user. Eagerly fetched to ensure roles are
-   * available immediately.
-   */
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "UserAuthority",
+      name = "user_authority",
       joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "authority"))
+      inverseJoinColumns = @JoinColumn(name = "authority_id"))
   private Set<Authority> authorities;
 
   protected User() {}
 
-  /**
-   * Constructs a user with all attributes including ID.
-   *
-   * @param id user ID
-   * @param username unique username
-   * @param password hashed password
-   * @param name first name
-   * @param lastName last name
-   * @param profilePicture profile picture URL/path
-   * @param authorities set of authorities assigned to the user
-   */
-  public User(
-      Long id,
-      String username,
-      String password,
-      String name,
-      String lastName,
-      String profilePicture,
-      Set<Authority> authorities) {
-    this.id = id;
-    this.username = username;
-    this.name = name;
-    this.lastName = lastName;
-    this.password = password;
-    this.profilePicture = profilePicture;
-    this.authorities = authorities;
+  private User(Builder builder) {
+    this.username = builder.username;
+    this.password = builder.password;
+    this.name = builder.name;
+    this.lastName = builder.lastName;
+    this.profilePicture = builder.profilePicture;
+    this.authorities = builder.authorities;
   }
 
   /**
-   * Constructs a user without an ID, for new users.
+   * Builder class for constructing {@link User} instances.
    *
-   * @param username unique username
-   * @param password hashed password
-   * @param name first name
-   * @param lastName last name
-   * @param profilePicture profile picture URL/path
-   * @param authorities set of authorities assigned to the user
+   * <p>Provides a fluent API to set optional and required fields for a User. Mandatory fields such
+   * as {@code username} should be validated inside their respective setters. Once all desired
+   * fields are configured, call {@link #build()} to create the {@code User} object.
    */
-  public User(
-      String username,
-      String password,
-      String name,
-      String lastName,
-      String profilePicture,
-      Set<Authority> authorities) {
-    this.name = name;
-    this.lastName = lastName;
-    this.username = username;
-    this.password = password;
-    this.authorities = authorities;
-    this.profilePicture = profilePicture;
+  public static class Builder {
+    private String username;
+    private String password;
+    private String name;
+    private String lastName;
+    private String profilePicture;
+    private Set<Authority> authorities;
+
+    /**
+     * Sets the username for the user being built.
+     *
+     * @param username the username to assign; must not be {@code null} or blank
+     * @return the builder instance for chaining
+     * @throws IllegalArgumentException if the provided username is {@code null} or blank
+     */
+    public Builder username(String username) {
+      if (username == null || username.isBlank()) {
+        throw new IllegalArgumentException("username can't be null or blank");
+      }
+      this.username = username;
+      return this;
+    }
+
+    public Builder password(String password) {
+      this.password = password;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder lastName(String lastName) {
+      this.lastName = lastName;
+      return this;
+    }
+
+    public Builder profilePicture(String profilePicture) {
+      this.profilePicture = profilePicture;
+      return this;
+    }
+
+    public Builder authorities(Set<Authority> authorities) {
+      this.authorities = authorities;
+      return this;
+    }
+
+    public User build() {
+      return new User(this);
+    }
   }
 
-  /** Sets the user's authorities to the system default authority. */
   public void setDefaultAuthority() {
-    this.setAuthorities(Authority.defaultAuthority());
+    this.authorities = Authority.defaultAuthority();
   }
 
-  /**
-   * Updates the user's first and last name.
-   *
-   * @param name new first name
-   * @param lastName new last name
-   */
   public void update(String name, String lastName) {
     this.name = name;
     this.lastName = lastName;
@@ -133,8 +143,29 @@ public class User {
     return id;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public String getUsername() {
+    return username;
+  }
+
+  /**
+   * Updates the username of this user.
+   *
+   * @param username the new username to assign; must not be {@code null} or blank
+   * @throws IllegalArgumentException if the provided username is {@code null} or blank
+   */
+  public void setUsername(String username) {
+    if (username == null || username.isBlank()) {
+      throw new IllegalArgumentException("username can't be null or blank");
+    }
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public String getName() {
@@ -153,30 +184,12 @@ public class User {
     this.lastName = lastName;
   }
 
-  public String getUsername() {
-    return username;
+  public String getProfilePicture() {
+    return profilePicture;
   }
 
-  /**
-   * Sets the username for the user.
-   *
-   * @param username new username, must not be null, empty or blank
-   * @throws IllegalArgumentException if username is empty or blank
-   */
-  public void setUsername(String username) {
-    if (username.isEmpty() || username.isBlank()) {
-      throw new IllegalArgumentException("username can't be empty");
-    }
-
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
+  public void setProfilePicture(String profilePicture) {
+    this.profilePicture = profilePicture;
   }
 
   public Set<Authority> getAuthorities() {
@@ -187,11 +200,11 @@ public class User {
     this.authorities = authorities;
   }
 
-  public String getProfilePicture() {
-    return profilePicture;
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setProfilePicture(String profilePicture) {
-    this.profilePicture = profilePicture;
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
   }
 }

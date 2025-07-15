@@ -1,7 +1,6 @@
 package com.dashboard.api.persistence.seed;
 
 import com.dashboard.api.domain.authority.Authority;
-import com.dashboard.api.domain.user.User;
 import com.dashboard.api.persistence.jpa.authority.AuthorityRepository;
 import com.dashboard.api.service.user.UserService;
 import com.dashboard.api.service.user.dto.RegisterRequest;
@@ -38,18 +37,10 @@ public class UserSeeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    String profilePic =
-        "https://pm1.aminoapps.com/7258/5520799cf0539b408bd8abee0a14d3a492ee5107r1-753-753v2_hq.jpg";
-    Set<Authority> role = Set.of(authorityRepository.findById("ROLE_USER").orElseThrow());
-    User user = new User(userUsername, userPassword, "User", "Da Silva", profilePic, role);
     try {
+      Set<Authority> role = Set.of(authorityRepository.findById("ROLE_USER").orElseThrow());
       RegisterRequest request =
-          new RegisterRequest(
-              user.getUsername(),
-              user.getPassword(),
-              user.getName(),
-              user.getLastName(),
-              user.getAuthorities());
+          new RegisterRequest(userUsername, userPassword, "User", "Da Silva", role);
       userService.register(request);
     } catch (EntityExistsException e) {
       System.out.println("Sample user already seeded");

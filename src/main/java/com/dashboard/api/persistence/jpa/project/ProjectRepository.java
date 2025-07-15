@@ -20,24 +20,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query("SELECT p.id FROM Project p WHERE p.name = :name")
   Optional<Long> findIdByName(String name);
 
-  @Query(
-      value =
-          """
-      SELECT EXISTS (
-          SELECT 1 FROM projects WHERE name = :name
-      )
-      """,
-      nativeQuery = true)
   boolean existsByName(String name);
 
   @Query(
       value =
           """
-      SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
-      FROM "ProjectServers"
-      WHERE project_id = :projectId
-      AND server_id IN (:serverIds)
-      """,
+          SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+          FROM "project_servers"
+          WHERE project_id = :projectId
+          AND server_id IN (:serverIds)
+          """,
       nativeQuery = true)
   boolean existsByNameAndServerIds(Long projectId, List<Long> serverIds);
 }

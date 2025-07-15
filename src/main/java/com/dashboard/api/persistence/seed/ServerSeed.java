@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * the ServerService to perform registration, handling duplicates gracefully.
  */
 @Component
-@Order(5)
+@Order(8)
 public class ServerSeed implements CommandLineRunner {
   private final ServerService serverService;
 
@@ -27,9 +27,9 @@ public class ServerSeed implements CommandLineRunner {
   public void run(String... args) throws Exception {
     final List<ServerRegisterInput> serversInput =
         List.of(
-            new ServerRegisterInput("SERVER-001"),
-            new ServerRegisterInput("SERVER-002"),
-            new ServerRegisterInput("SERVER-003"));
+            new ServerRegisterInput("SERVER-001", 1, 1),
+            new ServerRegisterInput("SERVER-002", 2, 2),
+            new ServerRegisterInput("SERVER-003", 1, 1));
 
     for (ServerRegisterInput serverInput : serversInput) {
       try {
