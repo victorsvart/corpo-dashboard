@@ -1,18 +1,19 @@
 package com.dashboard.api.service.project;
 
+import com.dashboard.api.domain.entitymanager.EntityManagerHelper;
 import com.dashboard.api.domain.project.Project;
+import com.dashboard.api.domain.projectstatus.ProjectStatus;
 import com.dashboard.api.domain.server.Server;
 import com.dashboard.api.persistence.jpa.project.ProjectRepository;
 import com.dashboard.api.service.base.BaseService;
-import com.dashboard.api.service.mapper.Mapper;
 import com.dashboard.api.service.project.dto.ProjectPresenter;
 import com.dashboard.api.service.project.dto.ProjectRegisterInput;
+import com.dashboard.api.service.projectstatus.ProjectStatusService;
 import com.dashboard.api.service.server.ServerService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,20 +21,27 @@ import org.springframework.stereotype.Service;
  * business logic related to projects, including validation against servers assigned to projects.
  */
 @Service
-public class ProjectService
-    implements BaseService<Project, ProjectPresenter, ProjectRegisterInput> {
+public class ProjectService extends BaseService<Project, ProjectPresenter, ProjectRegisterInput> {
 
-  private ProjectRepository projectRepository;
-  private ServerService serverService;
+  private final ProjectRepository projectRepository;
+  private final ProjectStatusService projectStatusService;
+  private final ServerService serverService;
 
   /**
    * Constructs a ProjectService with the specified repository and server service.
    *
    * @param projectRepository the repository used to manage projects persistence
-   * @param serverService the service used to manage servers related to projects
+   * @param projectStatusService the repository used to manage projects status persistence
+   * @param serverService the repository used to manage server persistence
    */
-  public ProjectService(ProjectRepository projectRepository, ServerService serverService) {
+  public ProjectService(
+      EntityManagerHelper entityManagerHelper,
+      ProjectRepository projectRepository,
+      ProjectStatusService projectStatusService,
+      ServerService serverService) {
+    super(entityManagerHelper);
     this.projectRepository = projectRepository;
+    this.projectStatusService = projectStatusService;
     this.serverService = serverService;
   }
 
@@ -89,19 +97,31 @@ public class ProjectService
    */
   public Project register(ProjectRegisterInput input)
       throws EntityExistsException, EntityNotFoundException {
-    if (projectRepository.exists(Example.of(new Project(input.name)))) {
-      throw new EntityExistsException("There already a project with the specified name!");
+    if (projectRepository.existsByName(input.name())) {
+      throw new EntityExistsException("There's already a project with the specified name!");
     }
 
-    List<Server> serversSelected = serverService.getMany(input.serverIds);
-    if (serversSelected.isEmpty()) {
-      throw new EntityNotFoundException("Server not found");
+    for (Long serverId : input.serverIds()) {
+      if (!serverService.existsById(serverId)) {
+        throw new EntityNotFoundException(String.format("Server id %d not found", serverId));
+      }
     }
 
-    if (isAnyServerRegisteredInProject(input.name, input.serverIds)) {
+    List<Server> serversSelected = emh.referencesByLong(Server.class, input.serverIds());
+
+    if (isAnyServerRegisteredInProject(input.name(), input.serverIds())) {
       throw new EntityExistsException("Server is already registered in project");
     }
-    Project project = Mapper.from(input, serversSelected);
+
+    ProjectStatus defaultStatus = projectStatusService.getDefault();
+    Project project =
+        new Project.Builder()
+            .name(input.name())
+            .servers(serversSelected)
+            .status(defaultStatus)
+            .details(input.details())
+            .build();
+
     return projectRepository.save(project);
   }
 
@@ -114,16 +134,21 @@ public class ProjectService
    * @throws EntityNotFoundException if no project with the specified ID is found
    */
   public Project update(ProjectRegisterInput input) throws IllegalArgumentException {
-    if (input.id.isEmpty()) {
+    if (input.id().isEmpty()) {
       throw new IllegalArgumentException("id is required!");
     }
 
     Project project =
         projectRepository
-            .findById(input.id.get())
+            .findById(input.id().get())
             .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified project"));
 
-    Mapper.fromTo(input, project);
+    List<Server> serversSelected = emh.referencesByLong(Server.class, input.serverIds());
+
+    ProjectStatus status = emh.reference(ProjectStatus.class, input.statusId());
+
+    project.update(input.name(), serversSelected, status, input.details());
+
     return projectRepository.save(project);
   }
 

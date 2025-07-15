@@ -6,8 +6,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Service class to manage {@link ProjectStatus} entities.
- * Provides methods to retrieve project status by name or ID.
+ * Service class to manage {@link ProjectStatus} entities. Provides methods to retrieve project
+ * status by name or ID.
  */
 @Service
 public class ProjectStatusService {
@@ -48,5 +48,17 @@ public class ProjectStatusService {
     return projectStatusRepository
         .findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Couldn't find specified status"));
+  }
+
+  /**
+   * Returns the default status. Usually "ACTIVE".
+   *
+   * @return Default project status ID.
+   * @throws EntityNotFoundException if no defaults are found.
+   */
+  public ProjectStatus getDefault() throws EntityNotFoundException {
+    return projectStatusRepository
+        .findByIsDefaultTrue()
+        .orElseThrow(() -> new EntityNotFoundException("Can't find default project status"));
   }
 }

@@ -16,4 +16,6 @@ public interface ProjectStatusRepository extends JpaRepository<ProjectStatus, In
   boolean existsByName(String name);
 
   Optional<ProjectStatus> findByName(String name);
+
+  Optional<ProjectStatus> findByIsDefaultTrue();
 }

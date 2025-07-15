@@ -1,7 +1,7 @@
 package com.dashboard.api.helpers;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /** Utility class for time-related operations. */
 public class TimeUtils {
@@ -43,7 +43,7 @@ public class TimeUtils {
    * @return a formatted string representing the time difference (e.g., "45s", "12min", "3h", "2d")
    * @throws IllegalStateException if an unexpected time category occurs
    */
-  public static String formatRelativeTime(LocalDateTime updatedAt, LocalDateTime now) {
+  public static String formatRelativeTime(Instant updatedAt, Instant now) {
     long seconds = Duration.between(updatedAt, now).getSeconds();
     TimeCategory tc = getTimeCategory(seconds);
 

@@ -14,7 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +27,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * creation and last update timestamps via Spring Data JPA auditing.
  */
 @Entity
-@Table(name = "Projects")
+@Table(name = "projects")
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
 
@@ -40,7 +40,7 @@ public class Project {
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "ProjectServers",
+      name = "project_servers",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "server_id"))
   private Set<Server> servers;
@@ -54,63 +54,60 @@ public class Project {
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
-  private LocalDateTime createdAt = LocalDateTime.now();
+  private Instant createdAt = Instant.now();
 
   @LastModifiedDate
   @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+  private Instant updatedAt;
 
-  /** Default constructor for JPA. */
   public Project() {}
 
-  /**
-   * Constructs a project with a given ID and name.
-   *
-   * @param id the project ID
-   * @param name the project name
-   */
   public Project(Long id, String name) {
     this.id = id;
     this.name = name;
   }
 
-  /**
-   * Constructs a project with a name and list of servers.
-   *
-   * @param name the project name
-   * @param servers the associated servers
-   */
+  public Project(String name) {
+    this.name = name;
+  }
+
   public Project(String name, List<Server> servers) {
     this.name = name;
     setServers(servers);
   }
 
   /**
-   * Constructs a project with a given name.
+   * Constructor to create a full instance of Project.
    *
-   * @param name the project name
+   * @param name name of the project.
+   * @param servers project's servers
+   * @param status project's status
+   * @param details project's details
    */
-  public Project(String name) {
-    this.name = name;
+  public Project(String name, List<Server> servers, ProjectStatus status, String details) {
+    setName(name);
+    setServers(servers);
+    setStatus(status);
+    setDetails(details);
   }
 
   /**
-   * Updates the name and details of the project.
+   * Fully updated the project entity.
    *
-   * @param name the new name
-   * @param details the new details
+   * @param name name of the project
+   * @param servers servers of the project
+   * @param status status of the project
+   * @param details details of the project
    */
-  public void update(String name, String details) {
+  public void update(String name, List<Server> servers, ProjectStatus status, String details) {
     setName(name);
+    setServers(servers);
+    setStatus(status);
     setDetails(details);
   }
 
   public Long getId() {
     return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public String getName() {
@@ -185,7 +182,48 @@ public class Project {
     return status.getName();
   }
 
-  public LocalDateTime getUpdatedAt() {
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public Instant getUpdatedAt() {
     return updatedAt;
+  }
+
+  /**
+   * Builds the {@link Project} instance using provided values.
+   *
+   * @return a fully initialized Server entity
+   * @throws IllegalArgumentException if name is null or blank
+   */
+  public static class Builder {
+    private String name;
+    private List<Server> servers;
+    private ProjectStatus status;
+    private String details;
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder servers(List<Server> servers) {
+      this.servers = servers;
+      return this;
+    }
+
+    public Builder status(ProjectStatus status) {
+      this.status = status;
+      return this;
+    }
+
+    public Builder details(String details) {
+      this.details = details;
+      return this;
+    }
+
+    public Project build() {
+      return new Project(name, servers, status, details);
+    }
   }
 }

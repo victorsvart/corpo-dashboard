@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * existing ProjectStatus and Server entries to associate with projects.
  */
 @Component
-@Order(6)
+@Order(9)
 public class ProjectSeeder implements CommandLineRunner {
   private final ProjectRepository projectRepository;
   private final ProjectStatusRepository statusRepository;
